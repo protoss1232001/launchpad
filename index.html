@@ -95,7 +95,7 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--card);borde
 .sesshead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0}
 .dots{display:flex;gap:6px;margin-top:6px}.dots span{width:28px;height:6px;border-radius:3px;background:var(--line)}.dots span.done{background:var(--good)}.dots span.now{background:var(--accent)}
 .lesson p,.lesson li{max-width:70ch}.lesson ul{padding-left:1.3em}.lesson li{margin:4px 0}
-.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}.qhead .pill{white-space:normal;text-align:right;max-width:100%}
 .passage{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;padding:14px 18px;margin:6px 0 14px;line-height:1.65}
 .passage .ptx{max-width:68ch}.t2+.t2{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.tlab{font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .noteh{margin-bottom:4px}.notes{margin:6px 0 0;padding-left:1.2em}.notes li{margin:3px 0}
@@ -149,7 +149,8 @@ body.testing{background:var(--card)}
 .elimx{border:1px solid var(--line);background:var(--card);border-radius:19px;min-width:38px;height:38px;padding:0 8px;font-weight:700;font-size:.8rem}
 .tp .stem{font-weight:500}
 .intro{display:grid;gap:10px;margin:12px 0}.iw{background:var(--paper);border-radius:10px;padding:10px 14px}.iw b{font-size:1.1rem}.isent{color:var(--teal);font-size:.92rem;margin-top:2px}
-.sprdir{background:var(--paper);border-radius:10px;padding:10px 14px}
+.sprdir{background:var(--paper);border-radius:10px;padding:10px 14px}.sprdir summary{cursor:pointer;font-weight:600}
+.pauselist{list-style:none;padding:0;margin:8px 0 0}.pauselist li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px solid rgba(0,0,0,.08);flex-wrap:wrap}
 .tpfoot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:10px 16px;border-top:2px dashed var(--line);background:var(--card);position:sticky;bottom:0;z-index:5}
 .tpname{font-weight:600;font-size:.9rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .navbtn{background:var(--ink);color:var(--paper);border:0;border-radius:8px;padding:.5em 1em;font-weight:700;white-space:nowrap}
@@ -313,14 +314,15 @@ const DOMS={alg:{sec:'math',t:'Algebra'},adv:{sec:'math',t:'Advanced Math'},psda
  ii:{sec:'rw',t:'Information and Ideas'},cs:{sec:'rw',t:'Craft and Structure'},ei:{sec:'rw',t:'Expression of Ideas'},sec:{sec:'rw',t:'Standard English Conventions'}};
 const SK={};
 function skill(id,o){SK[id]=Object.assign({id},o)}
-const lesson=(intro,steps,traps,desmos)=>`<p>${intro}</p><h4>How to do it</h4><ul>${steps.map(s=>`<li>${s}</li>`).join('')}</ul>${traps?`<h4>Common traps</h4><ul>${traps.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}${desmos?`<div class="tip desmos"><b>Desmos</b> ${desmos}</div>`:''}`;
+const lesson=(intro,steps,traps,desmos,example)=>`<p>${intro}</p><h4>How to do it</h4><ul>${steps.map(s=>`<li>${s}</li>`).join('')}</ul>${example?`<h4>Worked example</h4>${example}`:''}${traps?`<h4>Common traps</h4><ul>${traps.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}${desmos?`<div class="tip desmos"><b>Desmos</b> ${desmos}</div>`:''}`;
 
 // ================= ALGEBRA =================
 skill('alg_lin1',{t:'Linear equations in one variable',dom:'alg',course:0,phase:1,
  lesson:lesson('Solve for the variable by undoing operations in reverse order, doing the same thing to both sides.',
   ['Distribute and combine like terms on each side first.','Collect the variable on one side and numbers on the other.','For "no solution" or "infinitely many solutions" questions, simplify both sides: same variable coefficient with different constants means no solution; identical sides mean infinitely many.'],
   ['Dropping a negative sign when distributing: −3(<i>x</i> − 2) is −3<i>x</i> + 6, not −3<i>x</i> − 6.','Answering with <i>x</i> when the question asks for 2<i>x</i> + 1 or another expression.'],
-  'Type the left side as y₁ and the right side as y₂; the x-coordinate where the lines cross is the solution.'),
+  'Type <i>y</i> = (left side) on one line and <i>y</i> = (right side) on the next. Tap where the two lines cross: the <i>x</i>-coordinate is the solution.',
+  ex('For what value of <i>k</i> does 3(<i>x</i> + 2) = <i>kx</i> + 8 have no solution?','Distribute: 3<i>x</i> + 6 = <i>kx</i> + 8. The constants 6 and 8 already differ, so the equation has no solution exactly when the <i>x</i>-terms match: <i>k</i> = 3. (If the constants were equal too, every <i>x</i> would work: infinitely many solutions.)')),
  gen(d){
   if(d===1){const x=R(-9,12),a=pick([2,3,4,5,6,7,-2,-3,-4]),b=R(-15,15);if(!b)return null;const c=a*x+b;const undo=b<0?`Add ${mn(-b)} to`:`Subtract ${mn(b)} from`;
    const q=`If ${expr([[a,X],[b,'']])} = ${mn(c)}, what is the value of ${X}?`;
@@ -353,7 +355,7 @@ skill('alg_linfn',{t:'Linear functions',dom:'alg',course:1,phase:1,
    // interpret a linear model
    const rate=pick([12,15,18,25,35,45]),fee=pick([20,30,40,50,60,75]);const job=pick([['A plumber','hour of work','h','hours of work'],['A bike shop','day of rental','d','days of rental'],['A tutor','session','s','sessions']]);
    const askFee=R(0,1)===1;const num=askFee?fee:rate;
-   const q=`${job[0]} charges a total of ${V('C')} dollars for ${V(job[2])} ${job[3]}, where ${V('C')} = ${rate}${V(job[2])} + ${fee}. What is the best interpretation of ${num} in this context?`;
+   const q=`${job[0]} charges a total of ${V('C')} dollars for ${V(job[2])} ${job[3]}, where ${V('C')} = ${rate}${V(job[2])} + ${fee}. What is the best interpretation of the number ${num} in this context?`;
    const FIX=`A fixed charge that does not depend on the number of ${job[3]}`,EACH=`The charge for each ${job[1]}`;
    return mc(q,askFee?FIX:EACH,[askFee?EACH:FIX,`The total charge for ${num} ${job[3]}`,`The number of ${job[3]} that ${num} dollars will pay for`],askFee?`${fee} is added once, no matter what ${V(job[2])} is: it is the fixed charge. ${rate} is the rate, in dollars for each ${job[1]}.`:`${rate} is multiplied by ${V(job[2])}, the number of ${job[3]}, so it is the charge for each ${job[1]}. ${fee} is added once: the fixed charge.`,{form:1,chk:{t:'interp',p:{},a:askFee?'fixed':'rate'}})}
   // d3: two values of a linear function -> a third
@@ -384,7 +386,7 @@ skill('alg_lin2',{t:'Linear equations in two variables and their graphs',dom:'al
 
 skill('alg_sys',{t:'Systems of two linear equations',dom:'alg',course:1,phase:1,
  lesson:lesson('A system is solved by the point that makes both equations true: where the two lines cross.',
-  ['Substitution: when one equation is already "<i>y</i> = …", replace <i>y</i> in the other.','Elimination: multiply so one variable has opposite coefficients, then add the equations.','Read what is asked. Many questions want <i>x</i> + <i>y</i> or 2<i>x</i> − <i>y</i>, not <i>x</i>.','No solution: parallel lines (same slope, different intercepts). Infinitely many: the same line.'],
+  ['Substitution: when one equation is already "<i>y</i> = …", replace <i>y</i> in the other.','Elimination: multiply so one variable has opposite coefficients, then add the equations.','Read what is asked. Many questions want <i>x</i> + <i>y</i> or 2<i>x</i> − <i>y</i>, not <i>x</i>.','No solution: parallel lines (same slope, different intercepts). Infinitely many: the same line.','With a constant <i>k</i>: make one equation\'s <i>x</i>- and <i>y</i>-coefficients the same multiple of the other\'s. If the constants are a different multiple, no solution; if the same multiple, infinitely many.'],
   ['Stopping after finding <i>x</i> when the question asks for something else.','For "no solution," making the equations identical, which gives infinitely many solutions instead.'],
   'Graph both equations and tap the intersection. For "no solution" questions, use a slider for the constant.'),
  gen(d){
@@ -403,7 +405,8 @@ skill('alg_sys',{t:'Systems of two linear equations',dom:'alg',course:1,phase:1,
 skill('alg_ineq',{t:'Linear inequalities',dom:'alg',course:1,phase:1,
  lesson:lesson('Solve an inequality like an equation, with one extra rule: multiplying or dividing both sides by a negative number flips the inequality sign.',
   ['"At least" means ≥, "at most" and "no more than" mean ≤.','For the greatest or least whole number that works, solve, then check the boundary.','To test a point against a system of inequalities, it must satisfy every inequality.'],
-  ['Forgetting to flip the sign after dividing by a negative.','Rounding up when the budget means you must round down.']),
+  ['Forgetting to flip the sign after dividing by a negative.','Rounding up when the budget means you must round down.'],
+  'Type each inequality as written; Desmos shades it. The region shaded by both is the solution set, and you can tap a point to test it.'),
  gen(d){
   if(d===1){const a=pick([2,3,4,5,-2,-3,-4]),b=R(-10,10),x=R(-5,6);if(!b)return null;const c=a*x+b;const flip=a<0;
    const q=`Which inequality is equivalent to ${expr([[a,X],[b,'']])} > ${mn(c)}?`;
@@ -421,7 +424,7 @@ skill('alg_ineq',{t:'Linear inequalities',dom:'alg',course:1,phase:1,
 // ================= ADVANCED MATH =================
 skill('adv_equiv',{t:'Equivalent expressions',dom:'adv',course:1,phase:1,
  lesson:lesson('Equivalent expressions have the same value for every <i>x</i>. You will expand, factor, and use exponent rules.',
-  ['(<i>x</i> + <i>a</i>)(<i>x</i> + <i>b</i>) = <i>x</i>² + (<i>a</i> + <i>b</i>)<i>x</i> + <i>ab</i>.','To factor <i>x</i>² + <i>bx</i> + <i>c</i>, find two numbers that multiply to <i>c</i> and add to <i>b</i>.','Exponent rules: <i>x</i><sup>a</sup> · <i>x</i><sup>b</sup> = <i>x</i><sup>a+b</sup>; (<i>x</i><sup>a</sup>)<sup>b</sup> = <i>x</i><sup>ab</sup>; <i>x</i><sup>m/n</sup> is the <i>n</i>th root of <i>x</i><sup>m</sup>.','If two expressions are equal for all <i>x</i>, matching coefficients are equal.'],
+  ['(<i>x</i> + <i>a</i>)(<i>x</i> + <i>b</i>) = <i>x</i>² + (<i>a</i> + <i>b</i>)<i>x</i> + <i>ab</i>.','To factor <i>x</i>² + <i>bx</i> + <i>c</i>, find two numbers that multiply to <i>c</i> and add to <i>b</i>.','Exponent rules: <i>x</i><sup>a</sup> · <i>x</i><sup>b</sup> = <i>x</i><sup>a+b</sup>; (<i>x</i><sup>a</sup>)<sup>b</sup> = <i>x</i><sup>ab</sup>; <i>x</i><sup>m/n</sup> is the <i>n</i>th root of <i>x</i><sup>m</sup>.','Difference of squares: <i>a</i>² − <i>b</i>² = (<i>a</i> + <i>b</i>)(<i>a</i> − <i>b</i>). Factor out the greatest common factor first: 6<i>x</i>² − 24 = 6(<i>x</i>² − 4) = 6(<i>x</i> + 2)(<i>x</i> − 2).','Negative exponents: <i>x</i><sup>−<i>n</i></sup> = 1/<i>x</i><sup><i>n</i></sup>. To simplify (<i>x</i>² + 5<i>x</i> + 6)/(<i>x</i> + 2), factor the top and cancel: (<i>x</i> + 2)(<i>x</i> + 3)/(<i>x</i> + 2) = <i>x</i> + 3.','If two expressions are equal for all <i>x</i>, matching coefficients are equal.'],
   ['Forgetting the middle term: (<i>x</i> + 3)² is not <i>x</i>² + 9.','Adding exponents when you should multiply them.'],
   'Graph the original and a choice. If the two graphs lie exactly on top of each other, they are equivalent.'),
  gen(d){
@@ -439,9 +442,9 @@ skill('adv_equiv',{t:'Equivalent expressions',dom:'adv',course:1,phase:1,
   return spr(q,qv,`The ${X}-terms come from the outer and inner products: (${mn(a)})(${mn(e)}) + (${mn(b)})(${mn(c)}) = ${mn(a*e)}${plus(b*c)} = ${mn(qv)}. So ${V('q')} = <b>${mn(qv)}</b>.`,{chk:{t:'coef',p:{a,b,c,e},a:qv}})}});
 
 skill('adv_quad',{t:'Quadratic and other nonlinear equations',dom:'adv',course:1,phase:2,
- lesson:lesson('Quadratic equations can have two, one, or no real solutions. You can solve by factoring, by square roots, or with the quadratic formula.',
-  ['Get 0 on one side, then factor: (<i>x</i> − <i>r</i>)(<i>x</i> − <i>s</i>) = 0 gives <i>x</i> = <i>r</i> or <i>x</i> = <i>s</i>.','Discriminant <i>b</i>² − 4<i>ac</i>: positive → two real solutions, zero → exactly one, negative → none.','For <i>ax</i>² + <i>bx</i> + <i>c</i> = 0, the solutions add to −<i>b</i>/<i>a</i> and multiply to <i>c</i>/<i>a</i>.'],
-  ['Taking only the positive square root.','Using <i>b</i>² + 4<i>ac</i> instead of <i>b</i>² − 4<i>ac</i>.'],
+ lesson:lesson('Quadratic equations can have two, one, or no real solutions. You can solve by factoring, by square roots, or with the quadratic formula. Equations with square roots or fractions, and a line meeting a parabola, come down to a quadratic too.',
+  ['Get 0 on one side, then factor: (<i>x</i> − <i>r</i>)(<i>x</i> − <i>s</i>) = 0 gives <i>x</i> = <i>r</i> or <i>x</i> = <i>s</i>.','Discriminant <i>b</i>² − 4<i>ac</i>: positive → two real solutions, zero → exactly one, negative → none.','For <i>ax</i>² + <i>bx</i> + <i>c</i> = 0, the solutions add to −<i>b</i>/<i>a</i> and multiply to <i>c</i>/<i>a</i>.','Square-root or fraction equations: isolate the root, square both sides (or multiply through by the denominators), solve, then <b>check every answer in the original</b>. Squaring can create an answer that does not work (an extraneous solution).','A line and a parabola: substitute the line into the parabola to get one quadratic. Its discriminant tells how many times they meet: positive 2, zero 1 (the line is tangent), negative 0.'],
+  ['Taking only the positive square root.','Using <i>b</i>² + 4<i>ac</i> instead of <i>b</i>² − 4<i>ac</i>.','Keeping an extraneous solution: √(<i>x</i> + 3) can never equal a negative number.'],
   'Graph y = the quadratic. The x-intercepts are the solutions, and the number of crossings tells you how many there are.'),
  gen(d){
   if(d===1){const r=R(2,12),h=R(-5,5);const q=`What is the positive solution to ${h?`(${expr([[1,X],[-h,'']])})<sup>2</sup>`:X2} = ${r*r}?`;const pos=[h+r,h-r].filter(v=>v>0);if(pos.length!==1)return null;
@@ -453,16 +456,27 @@ skill('adv_quad',{t:'Quadratic and other nonlinear equations',dom:'adv',course:1
    const a=pick([1,2,3]),b=R(-9,9),c=R(-9,9);const D=b*b-4*a*c;const n=D>0?2:D===0?1:0;
    const q=`How many distinct real solutions does the equation ${expr([[a,X2],[b,X],[c,'']])} = 0 have?`;
    return mc(q,['Zero','Exactly one','Exactly two'][n],['Zero','Exactly one','Exactly two','Infinitely many'].filter((_,i)=>i!==n),`The discriminant is ${V('b')}² − 4${V('a')}${V('c')} = ${mn(b*b)} − ${par(4*a*c)} = ${mn(D)}. ${D>0?'Positive: two real solutions.':D===0?'Zero: exactly one real solution.':'Negative: no real solutions.'}`,{form:1,order:['Zero','Exactly one','Exactly two','Infinitely many'],chk:{t:'disc',p:{a,b,c},a:n}})}
-  // d3: the constant that gives exactly one solution
+  // d3: the constant that gives exactly one solution, a square-root equation with an extraneous
+  // solution, or how many times a line meets a parabola
+  const pickd3=R(0,2);
+  if(pickd3===1){// √(x + a) = x + b, built so that one root of the squared equation is extraneous
+   const b=R(-5,5),r1=R(-b-6,-b-1),r2=1-2*b-r1;if(r1===r2||Math.abs(r2)>40)return null;const av=b*b-r1*r2;if(r2+av<0)return null;
+   const q=`What is the solution to the equation √(${expr([[1,X],[av,'']])}) = ${expr([[1,X],[b,'']])}?`;
+   return spr(q,r2,`Square both sides: ${expr([[1,X],[av,'']])} = (${expr([[1,X],[b,'']])})² = ${expr([[1,X2],[2*b,X],[b*b,'']])}. So ${expr([[1,X2],[2*b-1,X],[b*b-av,'']])} = 0, which factors as (${expr([[1,X],[-r1,'']])})(${expr([[1,X],[-r2,'']])}) = 0. Check both in the original: ${X} = ${mn(r1)} makes the right side ${mn(r1+b)}, which is negative, but a square root is never negative, so ${mn(r1)} is extraneous. ${X} = ${mn(r2)} works: √${mn(r2+av)} = ${mn(r2+b)}. The solution is <b>${mn(r2)}</b>.${watch(`answering ${mn(r1)} without checking it in the original equation.`)}`,{chk:{t:'radical',p:{a:av,b},a:r2}})}
+  if(pickd3===2){// y = x² + bx + c and y = mx + k
+   const b=R(-6,6),c=R(-8,8),m=R(-5,5),k=R(-8,8);const B=b-m,C=c-k;const D=B*B-4*C;const n=D>0?2:D===0?1:0;
+   const q=`${Y} = ${expr([[1,X2],[b,X],[c,'']])}<br>${Y} = ${expr([[m,X],[k,'']])}<br>How many points of intersection do the graphs of the given equations have in the ${X}${Y}-plane?`;
+   return mc(q,['Zero','Exactly one','Exactly two'][n],['Zero','Exactly one','Exactly two','Infinitely many'].filter((_,i)=>i!==n),`Set the right sides equal: ${expr([[1,X2],[b,X],[c,'']])} = ${expr([[m,X],[k,'']])}, so ${expr([[1,X2],[B,X],[C,'']])} = 0. The discriminant is ${par(B)}² − 4(1)${par(C)} = ${mn(D)}. ${D>0?'Positive: two intersection points.':D===0?'Zero: the line touches the parabola at exactly one point.':'Negative: the line misses the parabola.'}`,{form:1,order:['Zero','Exactly one','Exactly two','Infinitely many'],chk:{t:'sysCount',p:{b,c,m,k},a:n}})}
   const k=pick([2,3,4,5,6,7,8,10,12]),b=2*k*(R(0,1)?1:-1);const cval=k*k;
   const q=`In the equation ${X2} ${b<0?'−':'+'} ${Math.abs(b)}${X} + ${V('c')} = 0, ${V('c')} is a constant. If the equation has exactly one real solution, what is the value of ${V('c')}?`;
   return spr(q,cval,`Exactly one solution means the discriminant is 0: (${mn(b)})² − 4(1)${V('c')} = 0, so ${V('c')} = ${b*b} ÷ 4 = <b>${cval}</b>. (The equation is then (${expr([[1,X],[b/2,'']])})² = 0.)`,{chk:{t:'oneSol',p:{b},a:cval}})}});
 
 skill('adv_nlfn',{t:'Nonlinear functions: quadratic and exponential',dom:'adv',course:1,phase:2,
  lesson:lesson('Quadratic functions make parabolas; exponential functions grow or shrink by the same factor each step.',
-  ['Vertex form <i>y</i> = <i>a</i>(<i>x</i> − <i>h</i>)² + <i>k</i> has its vertex at (<i>h</i>, <i>k</i>). Note the sign: (<i>x</i> − 3)² means <i>h</i> = 3.','Exponential: <i>f</i>(<i>t</i>) = <i>a</i>(<i>b</i>)<sup><i>t</i></sup>. Growth of <i>r</i>% per step means <i>b</i> = 1 + <i>r</i>/100; decay of <i>r</i>% means <i>b</i> = 1 − <i>r</i>/100.','The minimum or maximum of a parabola is the <i>y</i>-value of its vertex.'],
+  ['Vertex form <i>y</i> = <i>a</i>(<i>x</i> − <i>h</i>)² + <i>k</i> has its vertex at (<i>h</i>, <i>k</i>). Note the sign: (<i>x</i> − 3)² means <i>h</i> = 3.','Exponential: <i>f</i>(<i>t</i>) = <i>a</i>(<i>b</i>)<sup><i>t</i></sup>. Growth of <i>r</i>% per step means <i>b</i> = 1 + <i>r</i>/100; decay of <i>r</i>% means <i>b</i> = 1 − <i>r</i>/100.','From standard form <i>y</i> = <i>ax</i>² + <i>bx</i> + <i>c</i>, the vertex is at <i>x</i> = −<i>b</i>/(2<i>a</i>); substitute to get its <i>y</i>-value. From factored form, the vertex\'s <i>x</i> is halfway between the two <i>x</i>-intercepts.','The minimum or maximum of a parabola is the <i>y</i>-value of its vertex.','In <i>f</i>(<i>t</i>) = <i>a</i>(<i>b</i>)<sup><i>t</i></sup>, <i>a</i> is the starting value, <i>f</i>(0). If something doubles every 3 years, the model is <i>a</i>(2)<sup><i>t</i>/3</sup>.'],
   ['Reading (<i>x</i> + 2)² as a vertex at <i>x</i> = 2 instead of −2.','Writing a 6% increase as 0.06 instead of 1.06.'],
-  'Graph the function and tap the vertex: Desmos labels the minimum or maximum.'),
+  'Graph the function and tap the vertex: Desmos labels the minimum or maximum.',
+  ex('What is the minimum value of <i>f</i>(<i>x</i>) = <i>x</i>² − 6<i>x</i> + 11?','Vertex at <i>x</i> = −(−6)/(2 · 1) = 3. Then <i>f</i>(3) = 9 − 18 + 11 = 2. Or complete the square: (<i>x</i> − 3)² + 2, and a square is never negative, so the minimum is 2.')),
  gen(d){
   if(d===1){if(R(0,1)){const a=pick([2,3,5,10]),b=pick([2,3]),k=pick([2,3]);const val=a*Math.pow(b,k);
     const q=`The function ${V('f')} is defined by ${V('f')}(${X}) = ${a}(${b})<sup>${X}</sup>. What is the value of ${V('f')}(${k})?`;
@@ -516,8 +530,8 @@ skill('psda_pct',{t:'Percentages',dom:'psda',course:0,phase:1,
 
 skill('psda_stat1',{t:'One-variable data: center and spread',dom:'psda',course:1,phase:1,
  lesson:lesson('The mean is the total divided by the count; the median is the middle value in order. Spread measures how far values are from the center.',
-  ['Mean × count = total. Use it to find a missing value or the effect of adding one.','An outlier pulls the mean toward it but barely moves the median.','Standard deviation measures spread: data bunched near the mean has a smaller standard deviation. You never need to calculate it on the SAT, only compare.'],
-  ['Forgetting to put values in order before finding the median.','Thinking a larger mean means a larger standard deviation.']),
+  ['Mean × count = total. Use it to find a missing value or the effect of adding one.','An outlier pulls the mean toward it but barely moves the median.','Range = largest value − smallest value. Standard deviation measures spread: data bunched near the mean has a smaller standard deviation. You never need to calculate it on the SAT, only compare.','In a frequency table, dot plot, or histogram, the median is the middle of all <i>n</i> values: count up through the frequencies until you reach position (<i>n</i> + 1)/2.','If the mean is well above the median, a few large values are pulling it up (the data is skewed right); well below, a few small values are pulling it down.'],
+  ['Forgetting to put values in order before finding the median.','Thinking a larger mean means a larger standard deviation.','Reading the median of a frequency table from the middle row instead of the middle value.']),
  gen(d){
   if(d===1){const n=pick([5,6,7]),vals=Array.from({length:n},()=>R(3,20));const s=vals.reduce((a,b)=>a+b,0);if(s%n)return null;const m=s/n;
    return spr(`What is the mean of the data set ${vals.join(', ')}?`,m,`Total: ${vals.join(' + ')} = ${s}. Mean: ${s} ÷ ${n} = <b>${m}</b>.`,{chk:{t:'mean',p:{vals},a:m}})}
@@ -560,7 +574,7 @@ skill('psda_stat2',{t:'Two-variable data: scatterplots and models',dom:'psda',co
 
 skill('psda_prob',{t:'Probability and two-way tables',dom:'psda',course:0,phase:1,
  lesson:lesson('Probability = favorable outcomes ÷ total outcomes. With a two-way table, the key is choosing the right total.',
-  ['"Given that" or "of those who…" restricts the total to one row or column.','Fill in a table\'s missing cells from the totals before answering.'],
+  ['"Given that" or "of those who…" restricts the total to one row or column.','Fill in a table\'s missing cells from the totals before answering.','P(not A) = 1 − P(A). When a table gives percents of each row, that row is the total for those percents.'],
   ['Dividing by the grand total when the question restricts the group.']),
  gen(d){
   if(d===1){const r=R(3,9),b=R(3,9),g=R(2,8);const q=`A bag has ${r} red, ${b} blue, and ${g} green marbles. If one marble is picked at random, what is the probability that it is blue?`;
@@ -575,7 +589,9 @@ skill('psda_prob',{t:'Probability and two-way tables',dom:'psda',course:0,phase:
 skill('psda_infer',{t:'Sampling, margin of error and valid conclusions',dom:'psda',course:1,phase:2,
  lesson:lesson('A random sample lets you estimate a value for the population it was drawn from, within a margin of error.',
   ['An estimate of 42% with a margin of error of 3 percentage points means the true value is plausibly between 39% and 45%.','Results generalize only to the population that was sampled at random.','Only a randomized experiment (random assignment) can show cause and effect.','A larger sample gives a smaller margin of error.'],
-  ['Claiming cause and effect from an observational study.','Applying a sample from one school to the whole country.']),
+  ['Claiming cause and effect from an observational study.','Applying a sample from one school to the whole country.'],
+  null,
+  ex('Volunteers were randomly assigned to drink a new sports drink or water during a workout; the drink group ran farther. What can be concluded?','Random <i>assignment</i> supports cause: the drink likely improved distance, for people like the volunteers. But the volunteers were not randomly <i>selected</i> from any larger group, so the result cannot be generalized to all athletes.')),
  gen(d){
   if(d===2){const p=R(30,70),e=pick([2,3,4,5]);const q=`A random sample of voters in a city found that ${p}% support a new park, with a margin of error of ${e} percentage points. Which is the most plausible conclusion?`;
    return mc(q,`The percent of all voters in the city who support the park is likely between ${p-e}% and ${p+e}%.`,[`Exactly ${p}% of all voters in the city support the park.`,`The percent of all voters in the state who support the park is between ${p-e}% and ${p+e}%.`,`Between ${p-e}% and ${p+e}% of the sample supports the park.`],`A margin of error gives a plausible range for the whole population that was sampled: ${p-e}% to ${p+e}% of the city's voters. It does not make ${p}% exact, and it does not extend to the whole state.`,{form:1,chk:{t:'moe',p:{p,e},a:[p-e,p+e]}})}
@@ -610,7 +626,7 @@ skill('geo_area',{t:'Area and volume',dom:'geo',course:0,phase:1,
 
 skill('geo_lines',{t:'Lines, angles and triangles',dom:'geo',course:2,phase:1,
  lesson:lesson('Angle facts do most of the work: straight angles are 180°, angles in a triangle add to 180°, and parallel lines make equal angles.',
-  ['Parallel lines cut by a transversal: corresponding and alternate interior angles are equal; same-side interior angles add to 180°.','An exterior angle of a triangle equals the sum of the two far interior angles.','Similar triangles have proportional sides: set up small/large = small/large.'],
+  ['Parallel lines cut by a transversal: corresponding and alternate interior angles are equal; same-side interior angles add to 180°.','An exterior angle of a triangle equals the sum of the two far interior angles.','Vertical angles (across an X) are equal. In an isosceles triangle, the angles opposite the equal sides are equal.','The angles of any polygon with <i>n</i> sides add to (<i>n</i> − 2) × 180°: a pentagon\'s add to 540°.','Similar triangles have proportional sides: set up small/large = small/large.'],
   ['Matching the wrong sides in similar triangles.','Assuming a figure is drawn to scale.']),
  gen(d){
   if(d===1){const a=R(35,145);if(a===90)return null;
@@ -633,7 +649,8 @@ skill('geo_lines',{t:'Lines, angles and triangles',dom:'geo',course:2,phase:1,
 skill('geo_trig',{t:'Right triangles and trigonometry',dom:'geo',course:2,phase:2,
  lesson:lesson('In a right triangle, <i>a</i>² + <i>b</i>² = <i>c</i>², and the trigonometric ratios compare sides: SOH-CAH-TOA.',
   ['sin = opposite / hypotenuse, cos = adjacent / hypotenuse, tan = opposite / adjacent.','Special right triangles (on the reference sheet): 45-45-90 has sides <i>s</i>, <i>s</i>, <i>s</i>√2; 30-60-90 has sides <i>s</i>, <i>s</i>√3, 2<i>s</i>.','For complementary angles, sin <i>x</i>° = cos(90 − <i>x</i>)°.'],
-  ['Using the hypotenuse as the adjacent side.','Mixing up which leg is opposite an angle.']),
+  ['Using the hypotenuse as the adjacent side.','Mixing up which leg is opposite an angle.'],
+  'Desmos starts in radians. For a question in degrees, open the wrench menu and switch to degrees before typing sin(35).'),
  gen(d){
   const trip=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15]]);
   if(d===1){const [a,b,c]=trip;const q=`A right triangle has legs of length ${a} and ${b}. What is the length of the hypotenuse?`;
@@ -649,9 +666,9 @@ skill('geo_trig',{t:'Right triangles and trigonometry',dom:'geo',course:2,phase:
 
 skill('geo_circle',{t:'Circles, arcs and radians',dom:'geo',course:2,phase:2,
  lesson:lesson('Arcs and sectors are fractions of the whole circle: the central angle over 360° (or over 2π radians).',
-  ['Arc length = (angle/360) × 2π<i>r</i>. Sector area = (angle/360) × π<i>r</i>².','Radians: 180° = π radians.','Circle equation: (<i>x</i> − <i>h</i>)² + (<i>y</i> − <i>k</i>)² = <i>r</i>², center (<i>h</i>, <i>k</i>), radius <i>r</i>. Complete the square if it is not in this form.'],
+  ['Arc length = (angle/360) × 2π<i>r</i>. Sector area = (angle/360) × π<i>r</i>².','Radians: 180° = π radians.','Circle equation: (<i>x</i> − <i>h</i>)² + (<i>y</i> − <i>k</i>)² = <i>r</i>², center (<i>h</i>, <i>k</i>), radius <i>r</i>. Complete the square if it is not in this form.','A tangent line is perpendicular to the radius at the point where it touches the circle, which often creates a right triangle.'],
   ['Giving <i>r</i>² as the radius.','Reversing the signs of the center coordinates.'],
-  'Graph the circle equation exactly as given; Desmos draws it, and you can read the center and radius.'),
+  'Graph the circle equation exactly as given to check your work; Desmos draws it but labels nothing, so get the exact center and radius by completing the square.'),
  gen(d){
   if(d===1){const deg=pick([30,45,60,90,120,135,150,180,210,270]);
    const pif=(a,b)=>{[a,b]=simp(a,b);return (a===1?'':a)+'π'+(b===1?'':'/'+b)};
@@ -688,7 +705,7 @@ function serveItem(it){S.seenItem[it.id]=(S.seenItem[it.id]||0)+1;
  return {type:'mc',q:it.q||STEM[it.stem||'']||'',pas,ch,a:order.indexOf(it.a||0),exp:it.e,rid:it.id,diff:it.d}}
 
 skill('rw_wic',{t:'Words in context',dom:'cs',phase:1,
- lesson:lesson('The blank needs the word that fits the meaning of the whole text, precisely. The answer is rarely an obscure word; it is the one whose exact meaning matches the clues.',
+ lesson:lesson('The blank needs the word that fits the meaning of the whole text, precisely. Do not pick or avoid a word because it looks hard: on hard questions the answer is often the least familiar word, and it is always the one whose exact meaning matches the clues.',
   ['Cover the choices. Read the text and say your own word for the blank.','Find the clue: a contrast ("however," "although"), a restatement after a colon, or a cause ("because").','Check the tone: does the text praise, criticize, or stay neutral?','Test each choice in the sentence. Wrong answers often fit the general topic but not the precise meaning.'],
   ['Choosing a word that is related to the topic but not to the logic of the sentence.','Choosing the opposite because you missed a contrast word.'])});
 skill('rw_struct',{t:'Text structure and purpose',dom:'cs',phase:2,
@@ -701,7 +718,7 @@ skill('rw_cross',{t:'Cross-text connections',dom:'cs',phase:2,
   ['Answering from Text 1\'s point of view when the question asks about Text 2.','Assuming total disagreement when the second author only adds a qualification.'])});
 skill('rw_central',{t:'Central ideas and details',dom:'ii',phase:1,
  lesson:lesson('The main idea is what the whole text is about, not one detail. Detail questions ask what the text actually says.',
-  ['After reading, say the point in one sentence before you look at the choices.','Too narrow (one detail) and too broad (more than the text shows) are the usual traps.','For a detail question, find the line that proves your answer.'],
+  ['After reading, say the point in one sentence before you look at the choices.','Too narrow (one detail) and too broad (more than the text shows) are the usual traps.','For a detail question ("According to the text…"), find the sentence that states the answer. Reject a choice the text never says, even if it is true in real life.'],
   ['Choosing a true detail that is not the main idea.','Choosing something that sounds reasonable but the text never says.'])});
 skill('rw_evidT',{t:'Command of evidence: textual',dom:'ii',phase:2,
  lesson:lesson('You pick the finding or quotation that best supports (or weakens) a claim.',
@@ -717,15 +734,16 @@ skill('rw_infer',{t:'Inferences',dom:'ii',phase:2,
   ['Picking something true in real life that the text does not support.','Choosing an extreme conclusion when the text supports a modest one.'])});
 skill('rw_bound',{t:'Boundaries: punctuation between clauses',dom:'sec',phase:1,
  lesson:lesson('These questions test how sentences and clauses are joined or separated.',
-  ['Two complete sentences (independent clauses) can be joined by a period, a semicolon, or a comma plus <i>and, but, or, so, for, nor, yet</i>. A comma alone is a comma splice.','A colon follows a complete sentence and introduces an explanation, list, or example.','Do not put a comma between a subject and its verb, or between a verb and its object.','Dashes and commas that set off extra information must come in matching pairs.'],
-  ['Choosing a comma between two complete sentences.','Using a semicolon before a phrase that is not a complete sentence.'])});
+  ['Two complete sentences (independent clauses) can be joined by a period, a semicolon, or a comma plus <i>and, but, or, so, for, nor, yet</i>. A comma alone is a comma splice.','A colon follows a complete sentence and introduces an explanation, list, or example.','Do not put a comma between a subject and its verb, or between a verb and its object.','Dashes and commas that set off extra information must come in matching pairs.','"However," "therefore," and "for example" are not conjunctions. "…had rusted, however, engineers…" is still a comma splice; put a semicolon or a period before them.','A word such as <i>because, although, while,</i> or <i>when</i> makes a clause dependent. Attach it with a comma or nothing, never a semicolon.'],
+  ['Choosing a comma between two complete sentences.','Using a semicolon before a phrase that is not a complete sentence.'],null,
+  ex('The cables had rusted, engineers recommended replacing them.','Both halves are complete sentences, so a comma alone is a comma splice. Fix it with a semicolon ("rusted; engineers"), a period, or a comma plus <i>so</i> ("rusted, so engineers").'))});
 skill('rw_form',{t:'Form, structure and sense',dom:'sec',phase:1,
  lesson:lesson('These questions test agreement, verb forms, pronouns, possessives, and modifiers.',
-  ['Find the true subject; ignore phrases between the subject and verb ("The <u>list</u> of names <u>is</u>").','Pronouns must agree with their nouns: a company is "it," the members are "they."','Possessive: the dog\'s bowl (one dog), the dogs\' bowls (several). "Its" is possessive; "it\'s" means "it is."','A modifier at the start of a sentence describes the noun right after the comma.','Keep verb tense consistent with the time the text describes.'],
+  ['Find the true subject; ignore phrases between the subject and verb ("The <u>list</u> of names <u>is</u>").','Pronouns must agree with their nouns: a company is "it," the members are "they."','Possessive: the dog\'s bowl (one dog), the dogs\' bowls (several). "Its" is possessive; "it\'s" means "it is."','A modifier at the start of a sentence describes the noun right after the comma.','Keep verb tense consistent with the time the text describes.','Every sentence needs a main verb. "The study, conducted in 2019, showing that…" has none: choices ending in <i>-ing</i> or starting with <i>to</i> often leave a fragment.','Use <i>who</i> for people and <i>which</i> or <i>that</i> for things. Items in a list should share the same form: "reading, writing, and speaking," not "reading, writing, and to speak."'],
   ['Matching the verb to the nearest noun instead of the subject.','Using "their" for a single group noun such as "the team."'])});
 skill('rw_trans',{t:'Transitions',dom:'ei',phase:1,
  lesson:lesson('Choose the transition that states the real relationship between the ideas.',
-  ['Read the sentence before the blank and the one containing it. Name the relationship: contrast, continuation, example, cause and effect, or sequence.','Contrast: however, nevertheless, by contrast. Addition: moreover, furthermore, similarly. Result: therefore, consequently, thus. Example: for instance. Sequence: then, subsequently, finally.','Two choices with the same meaning cannot both be right, so both are wrong.'],
+  ['Read the sentence before the blank and the one containing it. Name the relationship: contrast, continuation, example, cause and effect, or sequence.','Contrast: however, nevertheless, by contrast. Addition: moreover, furthermore, in addition. Comparison: similarly, likewise. Result: therefore, consequently, thus. Example: for instance. Sequence: then, subsequently, finally.','Two choices with the same meaning cannot both be right, so both are wrong.'],
   ['Picking a transition by feel. Name the relationship first.','Choosing "for example" when the sentence restates rather than illustrates.'])});
 skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
  lesson:lesson('You get a student\'s bulleted notes and a goal. The answer is the sentence that accomplishes that exact goal using the notes.',
@@ -737,7 +755,7 @@ skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
 // ---- Words in context ----
 [
 {id:'wic01',d:1,p:`Marine biologist Sylvia Earle has spent more than 7,000 hours underwater. Her ${BLANK} to exploring and protecting the ocean has earned her the nickname "Her Deepness."`,ch:['devotion','indifference','resistance','proximity'],e:'The text describes more than 7,000 hours underwater and a nickname that honors her work, so the blank must mean deep commitment: "devotion." "Indifference" and "resistance" say the opposite.'},
-{id:'wic02',d:1,p:`Because the old bridge had become ${BLANK}, engineers closed it to traffic until repairs could make it safe again.`,ch:['unstable','elaborate','popular','symmetrical'],e:'The bridge was closed until it could be made "safe again," so it had become unsafe: "unstable."'},
+{id:'wic02',d:1,p:`Because the old bridge had become ${BLANK}, engineers closed it to traffic until repairs could make it safe again.`,ch:[`unstable`,`obsolete`,`congested`,`ornate`],e:`The bridge was closed until repairs could make it "safe again," so it had become unsafe: "unstable." A bridge that was outdated, crowded, or highly decorated would not need repairs to be safe.`},
 {id:'wic03',d:1,p:`The festival's organizers were ${BLANK} about attendance: they printed twice as many programs as the year before, confident that the crowds would be larger.`,ch:['optimistic','uncertain','secretive','careless'],e:'The colon explains the blank: they were "confident" crowds would grow and printed extra programs. That is "optimistic."'},
 {id:'wic04',d:2,p:`Although the novelist's early books received harsh reviews, her later work was so widely praised that several critics began to ${BLANK} their first judgments, admitting that they had misread her ambitions.`,ch:['revise','confirm','publish','overlook'],e:'Critics admitted they "had misread her ambitions," so they changed their earlier judgments: "revise." "Confirm" is the opposite.'},
 {id:'wic05',d:2,p:`The readings from the weather station were ${BLANK}: some sensors showed a sharp rise in temperature while others, recording at the same moment, showed a drop, so the team could draw no firm conclusion.`,ch:['contradictory','comprehensive','predictable','conclusive'],e:'Readings that disagree, leaving "no firm conclusion," are "contradictory." "Conclusive" is the opposite.'},
@@ -746,7 +764,7 @@ skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
 {id:'wic08',d:3,p:`Rather than dismissing traditional remedies outright, the pharmacologist treated them as leads worth testing, an approach that was ${BLANK} without being gullible: open to the possibility that a remedy worked, yet unwilling to accept any claim without evidence.`,ch:[`receptive`,`dismissive`,`rigid`,`credulous`],e:'The colon defines the blank as "open to the possibility," while "without being gullible" adds the limit. "Receptive" means open to ideas. "Dismissive" contradicts "rather than dismissing," and "credulous" means too ready to believe, the gullibility the text rules out.'},
 {id:'wic09',d:2,p:`The committee's report was notably ${BLANK}: it described each of the options available to the city but declined to recommend any of them.`,ch:['noncommittal','decisive','persuasive','inaccurate'],e:'A report that lays out options but "declined to recommend any of them" avoids taking a position: "noncommittal." "Decisive" is the opposite.'},
 {id:'wic10',d:3,p:`In her study of nineteenth-century letters, the historian argues that everyday correspondence, long dismissed as too ${BLANK} to reveal much about political life, in fact records how ordinary people discussed the great debates of their time.`,ch:['mundane','controversial','fragile','eloquent'],e:'Letters "long dismissed" as revealing little about politics were thought too ordinary: "mundane." The contrast "in fact records" shows they turned out to matter.'},
-{id:'wic11',d:1,p:`The new library's tall windows let in so much sunlight that the reading rooms rarely need ${BLANK} lighting during the day.`,ch:['additional','ancient','identical','reluctant'],e:'Plenty of sunlight means little need for extra lamps: "additional" lighting.'},
+{id:'wic11',d:1,p:`The new library's tall windows let in so much sunlight that the reading rooms rarely need ${BLANK} lighting during the day.`,ch:[`additional`,`decorative`,`permanent`,`portable`],e:`Plenty of sunlight means little need for extra lamps: "additional" lighting. Nothing in the text is about how the lighting looks, whether it is fixed in place, or whether it can be moved.`},
 {id:'wic12',d:2,p:`The chef's recipes look simple on the page, but each is the product of ${BLANK} testing; she may prepare a single dish dozens of times before she is satisfied.`,ch:['meticulous','hasty','occasional','reluctant'],e:'Making a dish "dozens of times" until satisfied shows extremely careful work: "meticulous." "Hasty" is the opposite.'},
 ].forEach(x=>item(Object.assign({sk:'rw_wic',stem:'wic'},x)));
 
@@ -762,6 +780,10 @@ skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
 {id:'cen08',d:1,p:'The International Space Station orbits Earth about once every 90 minutes, so the astronauts aboard see roughly sixteen sunrises and sunsets each day. To keep their bodies on a regular schedule, crews follow a fixed timetable for sleeping, eating, and working, and the station uses lights that can change color over the course of a day.',ch:[`Astronauts rely on fixed schedules and adjustable lighting to keep a steady daily rhythm despite the station's rapid orbit.`,`The International Space Station orbits Earth once each day, so astronauts see a single sunrise and sunset, as people on the ground do.`,`Astronauts see more sunrises in a single day than most people on Earth see in a week, and they find this exciting.`,`Astronauts on the station have found that they no longer need regular sleep while they are in orbit.`],e:'The fast orbit creates many sunrises, and the text explains how crews keep a steady routine. The third choice contradicts "every 90 minutes."'},
 {id:'cen09',d:2,p:'Each fall, millions of monarch butterflies travel from Canada and the United States to forests in central Mexico, a journey of up to about 3,000 miles. Remarkably, the butterflies that fly south have never been to Mexico: they are several generations removed from the monarchs that left Mexico the spring before. Researchers believe the butterflies find their way using the position of the sun together with an internal clock.',ch:[`Monarchs migrate to a place they have never been, apparently guided by the sun and an internal clock.`,`Monarch butterflies live for several generations, and each generation makes the full trip between Canada and Mexico.`,`Monarch butterflies spend the summer in the forests of central Mexico and travel north to Canada each fall.`,`Researchers have tracked individual monarchs on the entire journey from Canada to Mexico and back again.`],e:'The key idea is a long trip to an unvisited destination and how monarchs navigate. The other choices misstate or go beyond the text.'},
 {id:'cen10',d:3,p:'Working at the Harvard College Observatory in the early 1900s, Henrietta Swan Leavitt studied thousands of stars whose brightness rises and falls in a regular cycle. She noticed that the brighter stars of this type took longer to complete a cycle. Because the length of the cycle revealed how bright such a star truly is, astronomers could compare that true brightness with how bright the star appears from Earth and work out its distance.',ch:[`Leavitt's discovery of a link between a star's brightness and its cycle gave astronomers a way to measure distances in space.`,`Leavitt was the first person to observe stars whose brightness rises and falls, and she gave this type of star its name.`,`Stars that appear bright from Earth are always close to Earth, while stars that appear faint are always far away.`,`The Harvard College Observatory studied only stars that change in brightness, and it hired Leavitt to count them.`],e:'The text builds to the use of Leavitt\'s finding: measuring distance. It never says she was first to see variable stars, and the third choice contradicts the logic of the text.'},
+{id:'cen11',d:1,q:'According to the text, what did the ecologists find about cavity nests?',p:'In one study, ecologists placed small temperature sensors in 40 bird nests built inside tree cavities and 40 built in the open. Over a single summer, the cavity nests stayed on average 4°C cooler during the hottest hours of the day, and chicks in those nests gained weight faster. The researchers suggest that as summers grow hotter, species that nest in cavities may have an advantage over species that build open nests.',ch:[`They stayed cooler than open nests during the hottest part of the day.`,`They were built by more species than open nests were.`,`They were more likely to be abandoned during hot weather.`,`They held more chicks on average than open nests did.`],e:'The text states that cavity nests "stayed on average 4°C cooler during the hottest hours of the day." The other choices are never stated: the text says nothing about how many species, about abandonment, or about the number of chicks.'},
+{id:'cen12',d:2,q:'According to the text, what was one effect of the Erie Canal?',p:'When the Erie Canal opened in 1825, it linked the Hudson River to Lake Erie, giving farmers in the Midwest a water route to New York City. Before the canal, moving a ton of grain overland from Buffalo to New York cost about $100 and took weeks; by canal it cost under $10. Within a decade New York had become the busiest port in the United States, and towns along the canal\'s route grew rapidly.',ch:[`Shipping grain from Buffalo to New York became far cheaper.`,`Farmers in the Midwest began growing grain for the first time.`,`The Hudson River became navigable for the first time.`,`New York City\'s population declined as towns along the canal grew.`],e:'The text gives the cost of moving a ton of grain falling from about $100 to under $10. Nothing says farmers started growing grain, that the Hudson became navigable, or that New York\'s population fell; the text says the city became the busiest port.'},
+{id:'cen13',d:2,q:'According to the text, why does Priya keep the letter?',p:'The following text is from a short story.<br>Priya had read the letter so many times that she no longer needed to look at it. Still, she kept it folded in the front pocket of her bag, not because she expected to read it again but because throwing it away felt like agreeing with what it said. As long as it stayed with her, she told herself, the decision was not final.',ch:[`Discarding it would feel like accepting its message.`,`She plans to read it again when she has more time.`,`She intends to answer it once she decides what to say.`,`It contains details she has not yet memorized.`],e:'"Throwing it away felt like agreeing with what it said," so she keeps it to avoid that. The text says she does not expect to read it again and already knows it by heart, and it says nothing about answering it.'},
+{id:'cen14',d:3,q:'Based on the text, what is true of carbon dioxide concentrations over the past 800,000 years?',p:'Ice cores drilled from the Antarctic ice sheet contain tiny bubbles of air trapped when each layer of snow fell. By measuring the carbon dioxide in bubbles from different depths, scientists have reconstructed the gas\'s concentration in the atmosphere over the past 800,000 years. The record shows that concentrations rose and fell with the ice ages but never exceeded about 300 parts per million until the industrial era. Today\'s level is above 400.',ch:[`Until the industrial era they never rose above roughly 300 parts per million.`,`They stayed nearly constant until the industrial era.`,`They were highest during the ice ages.`,`They can be measured only in the most recently formed layers of ice.`],e:'The text says concentrations "never exceeded about 300 parts per million until the industrial era." They "rose and fell," so they were not constant; the text does not say they peaked during ice ages; and the record comes from "different depths," not only recent layers.'},
 ].forEach(x=>item(Object.assign({sk:'rw_central',stem:'central'},x)));
 
 // ---- Command of evidence: quantitative ----
@@ -785,11 +807,11 @@ skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
 {id:'bnd03',d:2,p:`The traditional recipe calls for only three ${BLANK} flour, water, and salt.`,ch:['ingredients:','ingredients;','ingredients','ingredients; being'],e:'A colon after a complete sentence introduces a list. A semicolon cannot introduce a list.'},
 {id:'bnd04',d:2,p:`The scientist who first described the ${BLANK} that it belonged to a previously unknown species.`,ch:['fossil argued','fossil, argued','fossil; argued','fossil: argued'],e:'The subject is "The scientist who first described the fossil," and the verb is "argued." No punctuation belongs between a subject and its verb.'},
 {id:'bnd05',d:2,p:`Frida Kahlo, who was born in Mexico City in ${BLANK} often painted self-portraits filled with symbols drawn from Mexican culture.`,ch:['1907,','1907','1907;','1907—'],e:'The information "who was born in Mexico City in 1907" is set off by a pair of commas. The opening comma needs a matching comma, not a dash or semicolon.'},
-{id:'bnd06',d:3,p:`In 1928, Alexander Fleming noticed that mold growing on a laboratory dish had killed the bacteria around ${BLANK} discovery eventually led to penicillin, one of the first antibiotics.`,ch:['it; this','it, this','it this','it, a'],e:'"This discovery eventually led to penicillin" is a complete sentence, so a semicolon is needed. "It, a discovery eventually led" is ungrammatical.'},
-{id:'bnd07',d:3,p:`The city's oldest bridge—built in 1883 and repaired only twice ${BLANK} carries thousands of cars each day.`,ch:['since—still','since, still','since; still','since still'],e:'The interrupting phrase opens with a dash, so it must close with a dash.'},
-{id:'bnd08',d:1,p:`Honeybees tell one another where to find food through a movement called the waggle ${BLANK} angle of the dance shows the direction to fly.`,ch:['dance; the','dance, the','dance the','dance, which the'],e:'Two complete sentences: a semicolon joins them. A comma alone creates a comma splice.'},
+{id:'bnd06',d:3,p:`In 1928, Alexander Fleming noticed that mold growing on a laboratory dish had killed the bacteria around ${BLANK} discovery eventually led to penicillin, one of the first antibiotics.`,ch:['it; this','it, this','it this','it, a'],e:`"a discovery eventually led to penicillin" is itself a complete sentence, so joining it to the first with only a comma is a comma splice, and with nothing is a run-on. A semicolon separates the two sentences correctly; "this discovery" then names what the second sentence is about.`},
+{id:'bnd07',d:3,p:`Built in 1883 to carry horse-drawn wagons, the city's oldest bridge—repaired only twice in its ${BLANK} carries thousands of cars each day, a durability that engineers attribute to the unusually thick stone of its piers.`,ch:[`history—still`,`history, still`,`history; still`,`history still`],e:`The extra information "repaired only twice in its history" opened with a dash, so it must close with a dash. A comma, a semicolon, or nothing would leave the pair unmatched.`},
+{id:'bnd08',d:1,p:`Sea otters wrap themselves in strands of kelp before they ${BLANK} anchor keeps them from drifting out to sea while they sleep.`,ch:[`sleep; the`,`sleep, the`,`sleep the`,`sleep, which the`],e:`Two complete sentences: a semicolon joins them. A comma alone makes a comma splice, nothing at all makes a run-on, and "which the anchor keeps" leaves the second part unfinished.`},
 {id:'bnd09',d:2,p:`When the first snow of the season ${BLANK} children rushed outside with their sleds.`,ch:['arrived, the','arrived; the','arrived: the','arrived, and the'],e:'An introductory "when" clause is followed by a comma. A semicolon or colon would need a complete sentence before it, and "and" leaves the sentence without a main clause.'},
-{id:'bnd10',d:3,p:`The experiment's result was ${BLANK} plants grown under red light grew taller than those grown under blue light.`,ch:['clear:','clear,','clear','clear; that'],e:'A colon introduces the explanation of what the clear result was. A comma alone would join two complete sentences.'},
+{id:'bnd10',d:3,p:`In a series of trials, the botanists raised seedlings under lamps of a single color, keeping water, soil, and temperature identical. The result was ${BLANK} seedlings grown under red light grew taller than those grown under blue light, though the blue-light seedlings had thicker stems.`,ch:['clear:','clear,','clear','clear; that'],e:`"The result was clear" is a complete sentence, and what follows explains the result, so a colon introduces it. A comma alone would join two complete sentences, and "clear; that" leaves a fragment after the semicolon.`},
 {id:'bnd11',d:2,p:`The height of Mount Everest is usually given as 8,849 ${BLANK} figure based on a survey completed in 2020.`,ch:['meters, a','meters; a','meters. A','meters and a'],e:'"A figure based on a survey…" is a phrase that describes the number, not a complete sentence, so it follows a comma.'},
 {id:'bnd12',d:1,p:`Wood frogs can survive being frozen solid through the ${BLANK} spring, they thaw out and hop away.`,ch:['winter. In','winter, in','winter in','winter: and in'],e:'"In spring, they thaw out and hop away" is a complete sentence, so a period separates it from the first.'},
 ].forEach(x=>item(Object.assign({sk:'rw_bound',stem:'conv'},x)));
@@ -798,16 +820,16 @@ skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
 [
 {id:'frm01',d:1,p:`The collection of rare books in the university's library ${BLANK} more than 5,000 volumes.`,ch:['includes','include','are including','have included'],e:'The subject is "collection," which is singular, so the verb is "includes." "Books" and "library" are inside phrases.'},
 {id:'frm02',d:1,p:`The company announced that ${BLANK} new headquarters would open in March.`,ch:['its','it\'s','their','its\''],e:'"The company" is singular, and the headquarters belong to it, so the possessive "its" is correct. "It\'s" means "it is."'},
-{id:'frm03',d:3,p:`Along the riverbank ${BLANK} a row of willow trees and a small wooden boathouse.`,ch:['stand','stands','is standing','has stood'],e:'The subject comes after the verb: "a row of willow trees and a narrow walking path." Two things joined by "and" take a plural verb: "stand."'},
+{id:'frm03',d:3,p:`In the painting's foreground, along the riverbank, ${BLANK} several old willow trees whose branches trail in the water.`,ch:['stand','stands','is standing','has stood'],e:`The subject comes after the verb: "several old willow trees." A plural subject takes the plural verb "stand," even though the singular noun "riverbank" comes just before the blank.`},
 {id:'frm04',d:2,p:`When the orchestra finished ${BLANK} final piece, the audience rose to applaud.`,ch:['its','their','it\'s','they\'re'],e:'"Orchestra" is a single group, so the possessive is "its."'},
 {id:'frm05',d:1,p:`In July 1969, the Apollo 11 lunar module ${BLANK} on the Moon, and Neil Armstrong became the first person to walk on its surface.`,ch:['landed','lands','has landed','will land'],e:'The event happened in 1969, and the sentence continues in the past ("became"), so the past tense "landed" is correct.'},
-{id:'frm06',d:3,p:`Having studied the fossil for months, ${BLANK}`,ch:['the paleontologist concluded that it belonged to a new species.','the fossil was identified by the paleontologist as a new species.','a new species was what the paleontologist concluded it was.','it was concluded by the paleontologist that the fossil was new.'],e:'The opening phrase describes the person who studied the fossil, so the paleontologist must come right after the comma. The other choices make it sound as if the fossil or a species did the studying.'},
+{id:'frm06',d:3,p:`Having studied the fossil for months, comparing its jaw and teeth with those of every known species in the museum's collection, ${BLANK}`,ch:['the paleontologist concluded that it belonged to a new species.','the fossil was identified by the paleontologist as a new species.','a new species was what the paleontologist concluded it was.','it was concluded by the paleontologist that the fossil was new.'],e:`The opening phrase describes someone who studied the fossil, so the noun right after the comma must be that person: "the paleontologist." The other choices make the fossil, a species, or "it" the one who did the studying.`},
 {id:'frm07',d:2,p:`Both ${BLANK} projects won awards at the regional science fair.`,ch:['students\'','student\'s','students','students\'s'],e:'"Both" means two students, and the projects belong to them: the plural possessive "students\'."'},
-{id:'frm08',d:3,p:`Each of the paintings in the exhibit ${BLANK} a small card describing the artist's technique.`,ch:['has','have','are having','were having'],e:'The subject is "Each," which is singular: "has." "Paintings" is inside the phrase "of the paintings."'},
+{id:'frm08',d:3,p:`Each of the forty paintings in the museum's new exhibit of Dutch still lifes ${BLANK} a small card describing the pigments the artist used and where they were obtained.`,ch:['has','have','are having','were having'],e:`The subject is "each," which is singular; "paintings" and "still lifes" sit inside prepositional phrases. So the verb is "has."`},
 {id:'frm09',d:2,p:`By the time the rescue team arrived at the campsite, the stranded hikers ${BLANK} for nearly two days.`,ch:['had waited','have waited','will have waited','wait'],e:'The waiting happened before another past event (the team arrived), so the past perfect "had waited" is correct.'},
-{id:'frm10',d:3,p:`Neither the coach nor the players ${BLANK} ready for the sudden change in the weather.`,ch:['were','was','is','has been'],e:'With "neither…nor," the verb agrees with the nearer subject, "players," which is plural: "were."'},
+{id:'frm10',d:3,p:`When the storm rolled in during the second half of the regional final, neither the coach nor the players ${BLANK} ready for the sudden change in the weather, and the game was delayed for nearly an hour.`,ch:['were','was','is','has been'],e:`With "neither … nor," the verb agrees with the nearer subject, "the players," which is plural, and the past tense matches "rolled in" and "was delayed": "were."`},
 {id:'frm11',d:1,p:`Engineers found that there ${BLANK} several reasons the old bridge had to be closed.`,ch:['were','was','is','has been'],e:'The subject comes after the verb: "several reasons," which is plural. The sentence is in the past ("found," "had to be"), so "were."'},
-{id:'frm12',d:2,p:`After the championship game, all eleven ${BLANK} uniforms were collected for cleaning.`,ch:['players\'','player\'s','players','players\'s'],e:'Eleven players own the uniforms, so the plural possessive "players\'" is needed.'},
+{id:'frm12',d:2,p:`After months of interviews, the committee released ${BLANK} final report on Tuesday.`,ch:[`its`,`it's`,`their`,`its'`],e:`"Its" is the possessive. "It's" means "it is," "their" is plural but "committee" is singular, and "its'" is not a word.`},
 ].forEach(x=>item(Object.assign({sk:'rw_form',stem:'conv'},x)));
 
 // ---- Transitions ----
@@ -818,11 +840,11 @@ skill('rw_synth',{t:'Rhetorical synthesis',dom:'ei',phase:2,
 {id:'trn04',d:2,p:`Solar panels can reduce a household's electricity bills. ${BLANK} they can raise the value of a home when it is sold.`,ch:['Moreover,','Instead,','Otherwise,','In other words,'],e:'The second sentence adds another benefit: "Moreover." "In other words" would signal a restatement, but raising home value is a new point.'},
 {id:'trn05',d:2,p:`The chemist first dissolved the salt in water. ${BLANK} she heated the solution until crystals began to form.`,ch:['Next,','In contrast,','For example,','Likewise,'],e:'The steps happen in order: "Next."'},
 {id:'trn06',d:2,p:`The first version of the app was slow and difficult to use. ${BLANK} it attracted thousands of users who saw promise in its central idea.`,ch:['Even so,','Consequently,','Similarly,','Specifically,'],e:'Attracting users despite being slow and difficult is a concession: "Even so." "Consequently" would say the problems caused the popularity.'},
-{id:'trn07',d:3,p:`The museum's new policy removes the admission fee on the first Sunday of every month. ${BLANK} visitors can see the entire collection at no cost on those days.`,ch:['In other words,','Nonetheless,','By contrast,','Previously,'],e:'The second sentence restates the first in plainer terms: "In other words."'},
-{id:'trn08',d:3,p:`Early critics dismissed the architect's glass-and-steel buildings as cold and impractical. ${BLANK} the buildings are now among the most admired in the city.`,ch:['Over time, however,','Likewise,','For this reason,','In addition,'],e:'The buildings went from dismissed to admired, a change and a contrast: "Over time, however." "For this reason" would claim the criticism caused the admiration.'},
-{id:'trn09',d:2,p:`The bridge's steel cables had begun to rust. ${BLANK} engineers recommended replacing them within five years.`,ch:['Therefore,','However,','Likewise,','For example,'],e:'The rust is the reason for the recommendation: "Therefore."'},
-{id:'trn10',d:1,p:`Researchers expected the new fertilizer to increase the corn harvest. ${BLANK} fields treated with it produced slightly less corn than untreated fields did.`,ch:['However,','Accordingly,','Moreover,','Specifically,'],e:'The result contradicts the expectation: "However."'},
-{id:'trn11',d:3,p:`The novelist chose not to give her characters names. ${BLANK} she identified them only by their work: the baker, the ferryman, the clockmaker.`,ch:[`Instead,`,`Similarly,`,`Nevertheless,`,`Meanwhile,`],e:'Identifying characters by their work replaces giving them names: "Instead."'},
+{id:'trn07',d:3,p:`Under the museum's new policy, the admission fee is waived on the first Sunday of every month, a change the director hopes will draw families who have never visited. ${BLANK} on twelve days a year, anyone can see the entire collection at no cost.`,ch:['In other words,','Nonetheless,','By contrast,','Previously,'],e:`The second sentence restates the policy in plainer terms: "In other words."`},
+{id:'trn08',d:3,p:`When the architect's glass-and-steel towers first rose in the 1950s, critics dismissed them as cold, impractical, and out of place among the city's brick facades. ${BLANK} the same towers are now protected as landmarks and appear on the covers of guidebooks.`,ch:['Over time, however,','Likewise,','For this reason,','In addition,'],e:`The towers went from dismissed to admired: a contrast over time, "Over time, however."`},
+{id:'trn09',d:2,p:`Some cities have found ways to reuse industrial buildings that had stood empty for decades. ${BLANK} a former grain silo in Cape Town, South Africa, now houses a museum of contemporary African art.`,ch:[`For example,`,`In contrast,`,`As a result,`,`Nevertheless,`],e:`The silo is one specific case of the general statement before it: "For example."`},
+{id:'trn10',d:1,p:`In winter, hedgehogs slow their heartbeat and lower their body temperature so that they can live on stored fat. ${BLANK} some bats spend the cold months in a deep sleep inside caves.`,ch:[`Similarly,`,`However,`,`Therefore,`,`For instance,`],e:`Bats sleeping through winter, like hedgehogs, is a second case of the same behavior: a comparison, "Similarly."`},
+{id:'trn11',d:3,p:`In her final novel, the author declined to give any of her characters names, a choice some reviewers found cold. ${BLANK} she identified them only by their work, the baker, the ferryman, the clockmaker, so that readers would see them first as parts of a village.`,ch:[`Instead,`,`Similarly,`,`Nevertheless,`,`Meanwhile,`],e:`Identifying characters by their work takes the place of giving them names: "Instead."`},
 {id:'trn12',d:1,p:`To make paper by hand, workers first soak plant fibers in water. Next, they press the soft pulp into thin sheets. ${BLANK} they hang the sheets to dry.`,ch:['Finally,','However,','For example,','In contrast,'],e:'This is the last step of the process: "Finally."'},
 ].forEach(x=>item(Object.assign({sk:'rw_trans',stem:'trans'},x)));
 
@@ -844,9 +866,9 @@ const SYN=g=>`The student wants to ${g}. Which choice most effectively uses rele
 {id:'str02',d:1,p:`For years, the town council debated whether to build a new library. Supporters said it would give students a quiet place to study; opponents worried about the cost. <u>Finally, a local family offered to pay half the construction bill, and the council approved the plan the same month.</u>`,
  ch:[`It describes the event that settled the debate presented earlier in the text.`,`It gives an opponent's main reason for rejecting the plan to build the new library.`,`It explains why students needed a quiet place to study.`,`It questions whether the library was worth its cost.`],
  e:`The text sets up a debate over cost. The underlined sentence tells how it ended: a gift covered half the cost and the plan was approved.`},
-{id:'str03',d:1,q:Q_PURPOSE,p:`Honeybees returning to the hive from a good patch of flowers perform a "waggle dance." The angle of the dance tells the other bees the direction of the food relative to the sun, and the length of each waggle run indicates how far away the food is. By following the dance, bees that have never visited the site can fly almost straight to it.`,
- ch:[`To explain how honeybees communicate the location of food to one another`,`To argue that honeybees are more intelligent than other insects`,`To describe how honeybees choose a place to build a new hive`,`To compare the dances of several different bee species`],
- e:`Every sentence is about how the dance tells other bees where food is. The text makes no argument about intelligence, hives, or other species.`},
+{id:'str03',d:1,q:Q_PURPOSE,p:`Lighthouses once depended on keepers who lived on site to light the lamp each evening, trim the wick, and keep the lens clean. Beginning in the twentieth century, electric lamps and automatic timers took over these tasks one by one. By the 1990s, nearly every lighthouse in the United States operated without a resident keeper.`,
+ ch:[`To describe how technology gradually replaced the work of lighthouse keepers`,`To argue that lighthouses are no longer needed for navigation`,`To explain how a lighthouse lens focuses its beam`,`To compare lighthouses in the United States with those in other countries`],
+ e:`Every sentence traces the shift from keepers' duties to machines. The text makes no argument about whether lighthouses are needed, does not explain the lens, and mentions no other country.`},
 {id:'str04',d:2,p:`Some critics dismissed the photographer's early work as mere snapshots of ordinary streets. <u>Yet those same pictures, taken in the 1950s, are now valued as detailed records of how city neighborhoods looked before highways were built through them.</u> Museums that once ignored her now compete to display the collection.`,
  ch:[`It contrasts the early criticism of the photographs with the way they are regarded today.`,`It explains why critics first dismissed the photographs as snapshots of ordinary city streets.`,`It describes the camera and the technique the photographer used to take the pictures in the 1950s.`,`It argues that the highways built through city neighborhoods improved them in the long run.`],
  e:`"Yet" signals a contrast: first critics dismissed the pictures, then the underlined sentence says they are now valued. That is a contrast between past criticism and present regard.`},
@@ -960,8 +982,8 @@ const SYN=g=>`The student wants to ${g}. Which choice most effectively uses rele
  ch:[`judging how appealing a flower is to bees by how it looks to human eyes can be misleading.`,`bees cannot see any of the colors that humans can see.`,`flowers with ultraviolet patterns produce more nectar than flowers that look plain to both bees and people.`,`humans could learn to see ultraviolet light with enough practice.`],
  e:`Flowers that look plain to us can look striking to bees, so our view is not a reliable guide to theirs. The text does not say bees see no human colors or compare nectar amounts.`},
 {id:'inf04',d:1,p:`Unlike most metals, gallium melts at about 30°C (86°F), a temperature lower than that of the human body. A solid piece of gallium held in a person's hand for several minutes would therefore be expected to ${BLANK}`,
- ch:[`begin to melt.`,`become harder.`,`turn into a gas.`,`stay exactly the same.`],
- e:`A hand is warmer than gallium's melting point, so the metal would start to melt.`},
+ ch:[`begin to melt.`,`feel much colder than the hand holding it.`,`stay solid until it is heated further.`,`become noticeably heavier.`],
+ e:`A hand is warmer than gallium's melting point, so the metal would start to melt. No further heating is needed, and melting does not change how much something weighs.`},
 {id:'inf05',d:2,p:`A company tested two versions of its website. Version A had a single large "Sign up" button. Version B had the same button plus three smaller links to other pages. Visitors to Version A signed up at nearly twice the rate of visitors to Version B, even though the pages were otherwise identical. One reasonable interpretation is that ${BLANK}`,
  ch:[`the extra links may have drawn visitors' attention away from signing up.`,`visitors to Version B could not see the "Sign up" button at all.`,`larger buttons always lead to more sign-ups than smaller ones.`,`most visitors prefer websites with many links.`],
  e:`The only difference was the extra links, so they may have distracted visitors. "Could not see" is too strong (people still signed up), and both versions had the same button.`},
@@ -1023,7 +1045,7 @@ const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMon
 const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const daysBetween=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
 const pct=(r,t)=>t?Math.round(r/t*100):0;
-const fresh=()=>({v:1,app:'sat',setup:false,name:'',grade:8,course:1,target:1500,start:today(),testDate:'',sk:{},vocab:{},tests:[],official:[],focus:[],missLog:[],days:{},seenLesson:{},seenItem:{},cur:null,tst:null,view:'home',theme:'auto',calcKey:'',openAll:false,lastBackup:null,lastDay:{words:'',math:'',rw:''},dayN:{words:0,math:0,rw:0},later:{},pace:{},wf:'due',pdiff:0,lastReview:null});
+const fresh=()=>({v:1,app:'sat',setup:false,name:'',grade:8,course:1,target:1500,start:today(),testDate:'',sk:{},vocab:{},tests:[],official:[],focus:[],missLog:[],days:{},seenLesson:{},seenItem:{},cur:null,tst:null,view:'home',theme:'auto',calcKey:'',openAll:false,lastBackup:null,lastDay:{words:'',math:'',rw:''},dayN:{words:0,math:0,rw:0},later:{},pace:{},wf:'due',pdiff:0,lastReview:null,gradeSet:'',resumeSkill:{}});
 
 // ---- checking saved data ----
 // Every load and every restore passes through clean(): values are forced into range and
@@ -1042,7 +1064,7 @@ const VIEWS=['home','plan','math','rw','tests','words','progress','result'];
 function clean(s){
  s.name=typeof s.name==='string'?s.name.slice(0,30):'';s.setup=!!s.setup;s.openAll=!!s.openAll;
  s.grade=int(s.grade,8,12,8);s.course=int(s.course,0,4,1);s.target=Math.round(int(s.target,800,1600,1500)/10)*10;
- if(!isDate(s.start))s.start=today();if(!isDate(s.testDate))s.testDate='';if(!isDate(s.lastBackup))s.lastBackup=null;
+ if(!isDate(s.start))s.start=today();if(!isDate(s.gradeSet))s.gradeSet=s.start;if(!isDate(s.testDate))s.testDate='';if(!isDate(s.lastBackup))s.lastBackup=null;
  s.theme=oneOf(s.theme,['auto','light','dark'],'auto');s.view=oneOf(s.view,VIEWS,'home');s.wf=oneOf(s.wf,['due','learning','learned','m','new','all'],'due');s.pdiff=int(s.pdiff,0,3,0);
  s.calcKey=typeof s.calcKey==='string'?s.calcKey.replace(/[^\w-]/g,'').slice(0,100):'';
  const arr3=a=>Array.isArray(a)&&a.length===3?a.map(v=>int(v,0,1e6,0)):[0,0,0];
@@ -1067,6 +1089,7 @@ function clean(s){
  const si={};for(const id in s.seenItem)if(/^[a-z0-9]{2,20}$/.test(id))si[id]=int(s.seenItem[id],0,1e5,0);s.seenItem=si;
  const pace={};for(const sec of ['math','rw']){const x=s.pace[sec];if(plainObj(x))pace[sec]={n:int(x.n,0,1e7,0),s:int(x.s,0,1e9,0),slow:int(x.slow,0,1e7,0)}}s.pace=pace;
  const ld={},dn={};for(const k of ['words','math','rw']){ld[k]=isDate(s.lastDay[k])?s.lastDay[k]:'';dn[k]=int(s.dayN[k],0,1e6,0)}s.lastDay=ld;s.dayN=dn;
+ const rsk={};for(const k of ['math','rw'])if(SK[s.resumeSkill[k]])rsk[k]=s.resumeSkill[k];s.resumeSkill=rsk;
  const later={};for(const id in s.later){const x=s.later[id];if(SK[id]&&plainObj(x)&&[1,2,3].includes(x.d)&&isDate(x.until))later[id]={d:x.d,since:isDate(x.since)?x.since:today(),until:x.until}}s.later=later;
  // An open session, test, or test review holds question markup written by this app; only its shape is checked.
  const c=s.cur;if(c&&!(plainObj(c)&&Array.isArray(c.steps)&&c.steps.length&&Number.isInteger(c.step)&&c.step>=0&&c.step<c.steps.length&&c.steps.every(st=>plainObj(st)&&(st.k!=='quiz'||(Array.isArray(st.qs)&&Array.isArray(st.res)&&Number.isInteger(st.i)&&st.i>=0&&st.i<Math.max(1,st.qs.length))))))s.cur=null;
@@ -1076,7 +1099,7 @@ function clean(s){
  return s}
 // Fields added after a save was written are filled in empty; then everything is checked.
 function norm(s){const f=fresh();for(const k in f)if(s[k]===undefined)s[k]=f[k];
- for(const k of ['sk','vocab','days','seenLesson','seenItem','pace','lastDay','dayN','later'])if(!plainObj(s[k]))s[k]={};
+ for(const k of ['sk','vocab','days','seenLesson','seenItem','pace','lastDay','dayN','later','resumeSkill'])if(!plainObj(s[k]))s[k]={};
  for(const k of ['tests','official','focus','missLog'])if(!Array.isArray(s[k]))s[k]=[];
  return clean(s)}
 
@@ -1140,7 +1163,7 @@ function whyLocked(id){const k=SK[id];const sec=DOMS[k.dom].sec;
  return sec==='math'?`Opens with ${COURSES[k.course]}, or after mastering the ${left} phase 1 math skill${left===1?'':'s'} left`:`Opens in 10th grade, or after mastering the ${left} phase 1 skill${left===1?'':'s'} left`}
 // Phase 3, the hardest timed drills, opens once a section estimate reaches 650.
 function best(sec){const t=S.tests.filter(x=>x[sec]&&x[sec].est).map(x=>x[sec].est);const o=S.official.filter(x=>x[sec]).map(x=>x[sec]);return Math.max(0,...t,...o)}
-const phase3Open=sec=>S.openAll||best(sec)>=650;
+const phase3Open=sec=>best(sec)>=650;
 
 // ================= QUESTION SOURCING =================
 // Generated math questions, or items from the Reading and Writing bank.
@@ -1150,7 +1173,8 @@ function mixQ(ids,n,diffs){const out=[];for(let i=0;i<n;i++){const id=ids[i%ids.
 // A math skill, or only its harder levels, can be paused when class has not covered it.
 // After three weeks the app asks again whether class has covered it.
 const PAUSE_DAYS=21;
-const pauseOf=id=>{const x=S.later[id];return x&&x.until>today()?x:null};
+// A pause lasts until it is resumed. After its three weeks the app asks whether class has covered the skill.
+const pauseOf=id=>S.later[id]||null;
 // The lowest paused difficulty (1 means the whole skill), or 0 when nothing is paused.
 const pausedFrom=id=>{const x=pauseOf(id);return x?x.d:0};
 const skActive=id=>skOpen(id)&&pausedFrom(id)!==1;
@@ -1236,7 +1260,6 @@ W('audacious','adj','boldly willing to take risks','The climbers\' ___ plan was 
 W('benign','adj','gentle; not harmful','The doctor explained that the growth was ___ and posed no danger.');
 W('coherent','adj','logical and consistent; fitting together','After revision, the essay was ___: each paragraph led clearly to the next.');
 W('complacent','adj','too satisfied to notice danger or the need to improve','After three easy wins, the team grew ___ and stopped practicing hard.');
-W('concise','adj','brief but complete','The editor asked for a ___ summary of no more than fifty words.');
 W('contemporary','adj','belonging to the same period of time','Historians value ___ accounts of the battle, written by people who saw it, over later retellings.',{m:'modern; of the present day'});
 W('definitive','adj','final and authoritative','The ___ edition of the author\'s letters includes every letter known to survive.');
 W('didactic','adj','intended to teach, often a moral lesson','The ___ fable ends by stating its lesson outright: slow and steady wins the race.');
@@ -1282,7 +1305,6 @@ W('ingenious','adj','clever and inventive','The ___ device used only sunlight to
 W('laudable','adj','deserving praise','The effort was ___, even though the project did not succeed.');
 W('lethargic','adj','sluggish and lacking energy','After the long flight, she felt ___ and slept most of the day.');
 W('momentous','adj','of great importance','The moon landing was a ___ event, watched by hundreds of millions of people.');
-W('nostalgic','adj','longing for the past','Looking at old photos made her ___ for her childhood summers.');
 W('obstinate','adj','stubborn; refusing to change','The ___ mule refused to move no matter how hard they pulled.');
 W('ominous','adj','suggesting that something bad will happen','The ___ black clouds warned of the storm to come.');
 W('placid','adj','calm and not easily upset','The ___ old horse did not even flinch when fireworks burst overhead.');
@@ -1291,11 +1313,10 @@ W('rudimentary','adj','basic; only partly developed','She had only a ___ knowled
 W('sparse','adj','thinly scattered','Plants are ___ in the desert, spaced far apart across the sand.');
 W('spurious','adj','false, though it may seem genuine','The study found a ___ link that disappeared once other factors were taken into account.');
 W('steadfast','adj','firm and unwavering','Through every hardship, her ___ friends stood by her.');
-W('terse','adj','brief to the point of rudeness','His ___ reply, "No," ended the conversation.');
+W('terse','adj','using very few words; short and blunt','His ___ reply, "No," ended the conversation.');
 W('unassuming','adj','modest; not seeking attention','Despite her fame, the ___ scientist insisted on carrying her own bags.');
 W('whimsical','adj','playfully unusual','The ___ garden featured teapot-shaped planters and a bench shaped like a whale.');
 W('verbose','adj','using more words than needed','The ___ report ran 300 pages when 30 would have done.');
-W('vivid','adj','producing strong, clear images in the mind','Her ___ description of the market made readers feel they were standing in it.');
 W('abstract','adj','existing as an idea rather than a physical thing','Young children find ___ ideas such as justice harder to grasp than objects they can see.');
 
 // ---- verbs ----
@@ -1304,7 +1325,7 @@ W('alleviate','v','to make pain or a problem less severe','The new medicine help
 W('assert','v','to state confidently','Scientists who ___ that a theory is true must be ready to show evidence.');
 W('augment','v','to make larger by adding to','The school hopes to ___ its library with two thousand new books.');
 W('bolster','v','to support or strengthen','The coach hoped an early win would ___ the players\' confidence.');
-W('circumvent','v','to find a way around an obstacle or rule','Engineers built a detour to ___ the flooded section of the highway.');
+W('circumvent','v','to find a way around an obstacle or rule','The company hired lawyers to help it ___ the new regulation without breaking it outright.');
 W('compel','v','to force','Rising floodwater may ___ residents to leave their homes.');
 W('concede','v','to admit, often reluctantly, that something is true','After the recount, the candidate had to ___ that she had lost.');
 W('condone','v','to accept or allow behavior that is wrong','The principal said the school would not ___ cheating of any kind.');
@@ -1334,7 +1355,6 @@ W('waver','v','to be unsteady or undecided','Once she had chosen a college, she 
 W('abate','v','to become less intense','The ferries stayed in port until the storm began to ___.');
 W('acquiesce','v','to accept something without protest, though reluctantly','Though he disagreed, he chose to ___ rather than delay the vote.');
 W('allude','v','to refer to something indirectly','The speaker did not name the company but seemed to ___ to its recent troubles.');
-W('amplify','v','to make louder or stronger','The band used speakers to ___ the sound for the large crowd.');
 W('attribute','v','to regard as caused by','Scientists ___ most of the recent rise in sea level to warming oceans and melting ice.');
 W('censure','v','to criticize formally and officially','The committee voted to ___ the member for breaking its ethics rules.');
 W('coalesce','v','to come together to form one whole','Over months, the separate protest groups began to ___ into a single movement.');
@@ -1366,20 +1386,10 @@ W('retract','v','to take back a statement','After the error was discovered, the 
 W('speculate','v','to form a theory without firm evidence','Without more data, scientists could only ___ about the cause of the sudden drop.');
 W('synthesize','v','to combine separate parts into a whole','A good research paper must ___ ideas from many sources into a single argument.');
 W('transcend','v','to go beyond the limits of','Great music can ___ language barriers, moving listeners who do not understand the words.');
-W('comply','v','to act according to a rule or request','All drivers must ___ with the new speed limit.');
-W('anticipate','v','to expect or predict','Organizers did not ___ such a large crowd and ran out of chairs.');
-W('assess','v','to evaluate','Teachers use short quizzes to ___ what students have learned.');
 W('constrain','v','to limit','A tight budget will ___ what the club can do this year.');
-W('depict','v','to show in a picture or in words','The mural was painted to ___ the history of the town.');
 W('dispel','v','to make a doubt, fear, or belief go away','The mayor\'s clear answers helped ___ fears that the library would close.');
 W('enumerate','v','to list one by one','The report goes on to ___ the ten steps required to apply.');
-W('modify','v','to change slightly','The team had to ___ its design after the first test failed.');
-W('obscure','v','to hide or make hard to see','Thick clouds can ___ the view of an eclipse.');
-W('persevere','v','to keep going despite difficulty','Many great inventors ___ through years of failed experiments before succeeding.');
 W('reiterate','v','to say again for emphasis','She paused to ___ the most important point for anyone who had missed it.');
-W('suppress','v','to hold back or put a stop to','She tried to ___ a laugh during the serious ceremony.');
-W('undergo','v','to experience or go through','The patient will ___ surgery next week.');
-W('verify','v','to check that something is true','Always ___ a website\'s claims against a second source.');
 
 // ---- nouns ----
 W('anomaly','n','something that differs from what is normal','The single June snowstorm on record stands out as the region\'s strangest weather ___.');
@@ -1388,7 +1398,6 @@ W('consensus','n','general agreement','After hours of debate, the group reached 
 W('conjecture','n','an opinion formed without complete evidence','Without records, the building\'s exact age remains a matter of ___.');
 W('dichotomy','n','a division into two contrasting parts','The novel explores the ___ between city life and country life.');
 W('discrepancy','n','a difference between things that should match','The auditor found a ___ between the sales records and the cash in the register.');
-W('hypothesis','n','a proposed explanation that can be tested','The students tested their ___ that plants grow faster when music is played.');
 W('impetus','n','a force that drives something forward','The drought provided the ___ for new water-saving laws.');
 W('paradox','n','a statement that seems contradictory but may be true','It is a ___ that having more choices can make people less satisfied with the one they pick.');
 W('precedent','n','an earlier event used as an example or rule for later ones','The court\'s decision set a ___ that later judges followed.');
@@ -1405,8 +1414,6 @@ W('fervor','n','intense and passionate feeling','The fans sang with such ___ tha
 W('hubris','n','excessive pride or self-confidence','The general\'s ___ led him to ignore every warning, and his army was defeated.');
 W('integrity','n','honesty and strong moral principles','Known for her ___, the judge refused to accept any gifts.');
 W('malaise','n','a general feeling of unease or low spirits','A ___ settled over the town after the factory closed.');
-W('prerequisite','n','something required beforehand','Algebra is a ___ for the physics course.');
-W('proximity','n','nearness','The hotel\'s ___ to the beach made it popular with families.');
 W('tenacity','n','persistence; refusal to give up','Her ___ paid off when, after twelve rejections, a publisher accepted her novel.');
 W('benefactor','n','a person who gives help, especially money','An anonymous ___ paid for the new science lab.');
 W('adversary','n','an opponent','In the final match, she faced her toughest ___, the defending champion.');
@@ -1415,7 +1422,6 @@ W('aptitude','n','a natural ability','His ___ for languages let him learn conver
 W('contingency','n','a possible future event that must be planned for','The team prepared a plan for every ___, including rain and power outages.');
 W('digression','n','a temporary move away from the main subject','After a long ___ about his childhood, the speaker returned to his main topic.');
 W('dissent','n','disagreement with an official or majority view','Although most members approved, there was some ___ among the newer members.');
-W('empathy','n','the ability to understand and share another\'s feelings','Having lost a pet herself, she felt deep ___ for her grieving friend.');
 W('facet','n','one side or aspect of something','The documentary examines every ___ of the artist\'s life, from childhood to fame.');
 W('influx','n','the arrival of large numbers of people or things','The town saw a huge ___ of visitors during the festival.');
 W('juxtaposition','n','placing things side by side to show contrast','The photo\'s ___ of a tiny kitten and a huge dog made viewers smile.');
@@ -1476,39 +1482,72 @@ M('reflect','v','to show or be a sign of','The rising sales ___ growing interest
 M('yield','v','to produce or provide','The orchard is expected to ___ a large crop of apples this fall.','to give way to traffic');
 M('resolve','n','firm determination','Despite her injuries, the runner\'s ___ never weakened.','to settle a problem');
 
+
+// ---- words added after the tutor review: frequent on the digital SAT ----
+W('ameliorate','v','to make a bad situation better','The new drainage system did much to ___ the flooding that had plagued the neighborhood.');
+W('belie','v','to give a false impression of; to contradict','The senator\'s calm voice seemed to ___ the anxiety that her clenched hands revealed.');
+W('circumscribe','v','to limit or restrict','The new charter will ___ the mayor\'s power to award contracts without a vote.');
+W('deleterious','adj','harmful, often in a gradual or hidden way','Doctors warned that the ___ effects of the chemical might not appear for years.');
+W('disparage','v','to speak of as unimportant or inferior','Critics who ___ the film as a mere cartoon overlook how carefully it is written.');
+W('equivocal','adj','open to more than one interpretation; deliberately unclear','The witness\'s ___ answer left the jury unsure whether she had seen the car at all.');
+W('exemplify','v','to be a typical example of','The town\'s covered bridge came to ___ the region\'s traditional craftsmanship.');
+W('fastidious','adj','very attentive to detail; hard to please','A ___ editor, she checked every date and spelling in the manuscript twice.');
+W('imperative','adj','absolutely necessary; urgent','With the storm hours away, it was ___ that the coastal towns be evacuated.');
+W('inadvertent','adj','not intended; accidental','The leak of the report was ___: an employee attached the wrong file to an email.');
+W('innocuous','adj','harmless; unlikely to offend','What seemed an ___ question about her hometown led to a long, painful story.');
+W('intractable','adj','hard to control or solve','Traffic in the city center proved so ___ that three plans in ten years had failed to ease it.');
+W('mitigate','v','to make less severe or harmful','Planting trees along the highway helped ___ the noise for nearby homes.');
+W('nascent','adj','just beginning to exist or develop','In the 1890s the ___ film industry consisted of a few short reels shown at fairs.');
+W('nominal','adj','in name only; very small compared with the real value','The museum charges a ___ fee of one dollar, mainly to count its visitors.');
+W('paucity','n','a shortage; too small an amount','Because of the ___ of written records, historians know little about the town\'s first decade.');
+W('perfunctory','adj','done quickly and carelessly, as a routine','The guard gave the badge a ___ glance and waved the visitor through.');
+W('preclude','v','to make impossible; to prevent','A prior engagement will ___ her from attending the ceremony.');
+W('salient','adj','most noticeable or important','The report\'s most ___ finding was that repairs cost less than replacement.');
+W('scant','adj','barely enough; very little','With ___ evidence to support the claim, the editor refused to print the story.');
+W('stipulate','v','to state as a required condition','The contract will ___ that all repairs be completed before the sale closes.');
+W('supersede','v','to take the place of something older','The 2021 guidelines ___ all earlier versions, which should no longer be used.');
+W('tacit','adj','understood without being stated','By staying silent, the board gave its ___ approval to the plan.');
+W('trepidation','n','fear or nervousness about what may happen','She opened the envelope with ___, expecting bad news.');
+W('vestige','n','a small remaining trace of something that has almost disappeared','The stone arch is the last ___ of the medieval wall that once circled the town.');
+W('wane','v','to decrease gradually in size, strength, or importance','Public interest in the case began to ___ once the trial ended.');
+M('table','v','to set aside for later consideration','The council voted to ___ the proposal until the budget figures were ready.','a piece of furniture with a flat top');
+M('discount','v','to disregard as unimportant or unreliable','Researchers should not ___ the survey results simply because the sample was small.','a reduction in price');
+M('flag','v','to become weak or tired','After the fourth hour of the hike, even the strongest walkers began to ___.','a piece of cloth used as a symbol');
+M('spare','adj','plain; without decoration or excess','The poet\'s ___ style uses no word that is not needed.','extra; kept in reserve');
+M('want','n','a lack or shortage','For ___ of a single spare part, the entire assembly line stood idle for a day.','to wish for something');
+M('exploit','v','to make full use of','The company plans to ___ its early lead by opening stores in ten new cities.','to treat unfairly for one\'s own gain');
+M('compound','v','to make a problem worse by adding to it','Delaying the repairs will only ___ the damage to the roof.','a substance made of two or more elements');
+
 // Near-synonyms: never offered as competing choices for one another.
 const WCLOSE=[
- ['cogent','credible','plausible','sound','robust'],['conspicuous','striking','discernible'],['contentious','partisan'],
- ['dubious','skeptical','spurious','tenuous','wary'],['ephemeral','transient'],['esoteric','opaque','abstract','cryptic','enigmatic'],['extraneous','peripheral','redundant'],
- ['feasible','viable','plausible'],['frugal','economy','austere'],['impartial','equitable','objective'],['indifferent','apathetic','lethargic'],
- ['innovative','ingenious','novel'],['meticulous','diligent','discriminating'],['mundane','pedestrian','conventional'],['pervasive','prevalent','ubiquitous','predominant'],
- ['prudent','pragmatic','wary'],['stagnant','lethargic'],['subtle','nuanced','nuance'],['superficial','cursory'],['trivial','negligible','peripheral'],
- ['vague','ambiguous','opaque'],['volatile','fluctuate'],['adverse','ominous','grave'],['coherent','lucid','concise'],['concise','terse','economy'],['verbose','copious'],
- ['benign','placid'],['candid','candor','explicit'],['reticent','retiring','unassuming','insular'],['sanguine','zealous'],['zealous','fervor','partisan'],['tangible','concrete'],
- ['unwarranted','arbitrary'],['eminent','venerable'],['dogmatic','obstinate','steadfast'],['steadfast','resolve','tenacity'],['disparate','eclectic','incongruous','anomalous','idiosyncratic'],
- ['impervious','resilient','robust'],['indispensable','prerequisite','inherent'],['inherent','implicit'],['laudable','exemplary'],['adept','aptitude','versatile'],
- ['momentous','profound'],['provisional','qualified'],['partial','partisan'],['measured','temper','qualified'],
- ['advocate','endorse','champion','bolster','sanction'],['alleviate','abate','diminish','temper','negate','curtail'],['assert','contend','reiterate','underscore'],['augment','amplify','proliferate','bolster'],
- ['circumvent','deviate'],['compel','command','exact'],['concede','acquiesce','relinquish','forgo','tender','comply','observe'],['condone','sanction'],
- ['corroborate','substantiate','verify','vindicate'],['curtail','constrain','check','hinder','arrest','stem','suppress'],['debunk','refute','dispel','discredit','repudiate','retract'],['deter','hinder'],
- ['discern','infer','assess','scrutinize'],['disseminate','proliferate'],['elicit','evoke','instigate','galvanize','precipitate'],['emulate','fashion'],['exacerbate','jeopardize','compromise','undermine'],
- ['facilitate','foster','cultivate','afford'],['hinder','undermine','jeopardize'],['elucidate','delineate','enumerate','depict'],['reconcile','mediate','synthesize','coalesce'],
- ['allude','intimate','betray','reflect'],['attribute','infer'],['censure','disdain','discredit'],['embellish','amplify'],['entail','undergo','sustain'],['eradicate','suppress'],
- ['waver','fluctuate'],['implement','fashion'],['perpetuate','persevere','sustain'],['obscure','suppress'],['modify','qualify','temper'],
- ['anomaly','paradox','anomalous'],['catalyst','impetus','advent'],['consensus','mandate'],['conjecture','hypothesis','premise','speculate'],['dichotomy','juxtaposition'],['discrepancy','dissent'],
- ['proponent','benefactor','advocate'],['scrutiny','scrutinize'],['autonomy','license'],['hubris','disdain'],
- ['integrity','candor'],['malaise','lethargic','aversion'],['contingency','reservation','hypothetical'],['digression','deviate'],
- ['facet','nuance'],['account','depict'],['founder','upset'],['dwell','harbor'],['dispatch','facilitate'],['yield','afford'],['engaging','gregarious','whimsical'],
- ['cardinal','predominant','indispensable'],
- // near-synonyms found in review
+ ['cogent','credible','plausible','sound','robust'],['conspicuous','striking','discernible'],['contentious','partisan'],['dubious','skeptical','spurious','tenuous','wary'],['ephemeral','transient'],['esoteric','opaque','abstract','cryptic','enigmatic'],
+ ['extraneous','peripheral','redundant'],['feasible','viable','plausible'],['frugal','economy','austere'],['impartial','equitable','objective'],['indifferent','apathetic','lethargic'],['innovative','ingenious','novel'],
+ ['meticulous','diligent','discriminating'],['mundane','pedestrian','conventional'],['pervasive','prevalent','ubiquitous','predominant'],['prudent','pragmatic','wary'],['stagnant','lethargic'],['subtle','nuanced','nuance'],
+ ['superficial','cursory'],['trivial','negligible','peripheral'],['vague','ambiguous','opaque'],['volatile','fluctuate'],['adverse','ominous','grave'],['coherent','lucid'],
+ ['terse','economy'],['verbose','copious'],['benign','placid'],['candid','candor','explicit'],['reticent','retiring','unassuming','insular'],['sanguine','zealous'],
+ ['zealous','fervor','partisan'],['tangible','concrete'],['unwarranted','arbitrary'],['eminent','venerable'],['dogmatic','obstinate','steadfast'],['steadfast','resolve','tenacity'],
+ ['disparate','eclectic','incongruous','anomalous','idiosyncratic'],['impervious','resilient','robust'],['indispensable','inherent'],['inherent','implicit'],['laudable','exemplary'],['adept','aptitude','versatile'],
+ ['momentous','profound'],['provisional','qualified'],['partial','partisan'],['measured','temper','qualified'],['advocate','endorse','champion','bolster','sanction'],['alleviate','abate','diminish','temper','negate','curtail'],
+ ['assert','contend','reiterate','underscore'],['augment','proliferate','bolster'],['circumvent','deviate'],['compel','command','exact'],['concede','acquiesce','relinquish','forgo','tender','observe'],['condone','sanction'],
+ ['corroborate','substantiate','vindicate'],['curtail','constrain','check','hinder','arrest','stem'],['debunk','refute','dispel','discredit','repudiate','retract'],['deter','hinder'],['discern','infer','scrutinize'],['disseminate','proliferate'],
+ ['elicit','evoke','instigate','galvanize','precipitate'],['emulate','fashion'],['exacerbate','jeopardize','compromise','undermine'],['facilitate','foster','cultivate','afford'],['hinder','undermine','jeopardize'],['elucidate','delineate','enumerate'],
+ ['reconcile','mediate','synthesize','coalesce'],['allude','intimate','betray','reflect'],['attribute','infer'],['censure','disdain','discredit'],['entail','sustain'],['waver','fluctuate'],
+ ['implement','fashion'],['perpetuate','sustain'],['qualify','temper'],['anomaly','paradox','anomalous'],['catalyst','impetus','advent'],['consensus','mandate'],
+ ['conjecture','premise','speculate'],['dichotomy','juxtaposition'],['discrepancy','dissent'],['proponent','benefactor','advocate'],['scrutiny','scrutinize'],['autonomy','license'],
+ ['hubris','disdain'],['integrity','candor'],['malaise','lethargic','aversion'],['contingency','reservation','hypothetical'],['digression','deviate'],['facet','nuance'],
+ ['founder','upset'],['dwell','harbor'],['dispatch','facilitate'],['yield','afford'],['engaging','gregarious','whimsical'],['cardinal','predominant','indispensable'],
  ['unprecedented','novel'],['explicit','lucid','concrete'],['cogent','coherent','sound','lucid'],['rudimentary','partial','qualified','wanting'],['adept','qualified'],['zealous','keen'],
- ['momentous','cardinal','grave'],['sporadic','sparse'],['ostensible','spurious','plausible'],['check','verify','scrutinize','assess'],['observe','discern','scrutinize'],['constrain','qualify'],
- ['yield','relinquish','concede','acquiesce','forgo'],['entertain','harbor','dwell'],['advent','influx'],['aversion','disdain'],['mandate','license','autonomy','dispatch'],
- ['subtle','negligible','tenuous'],['superficial','negligible','trivial'],['precarious','tenuous'],['provisional','transient','ephemeral'],['verbose','redundant'],['prolific','copious'],
- ['prudent','measured','frugal'],['belligerent','contentious'],['nuanced','discriminating','keen'],['vague','ambiguous','cryptic','enigmatic'],['fortuitous','arbitrary'],['viable','qualified'],
- ['censure','sanction'],['condone','acquiesce'],['mediate','compromise','reconcile'],['bolster','sustain','foster','substantiate','corroborate'],['temper','check','suppress','constrain'],
- ['founder','waver'],['tender','afford','yield'],['fashion','yield'],['entertain','assess','scrutinize'],['anomaly','discrepancy'],['dissent','reservation'],['dispatch','economy'],
- ['reflect','depict'],['exacerbate','amplify'],['measured','placid'],['grave','precarious'],['cultivate','bolster'],['anticipate','speculate'],['elusive','enigmatic'],['contemporary','novel','innovative']];
+ ['momentous','cardinal','grave'],['sporadic','sparse'],['ostensible','spurious','plausible'],['check','scrutinize'],['observe','discern','scrutinize'],['constrain','qualify'],
+ ['yield','relinquish','concede','acquiesce','forgo'],['entertain','harbor','dwell'],['advent','influx'],['aversion','disdain'],['mandate','license','autonomy','dispatch'],['subtle','negligible','tenuous'],
+ ['superficial','negligible','trivial'],['precarious','tenuous'],['provisional','transient','ephemeral'],['verbose','redundant'],['prolific','copious'],['prudent','measured','frugal'],
+ ['belligerent','contentious'],['nuanced','discriminating','keen'],['vague','ambiguous','cryptic','enigmatic'],['fortuitous','arbitrary'],['viable','qualified'],['censure','sanction'],
+ ['condone','acquiesce'],['mediate','compromise','reconcile'],['bolster','sustain','foster','substantiate','corroborate'],['temper','check','constrain'],['founder','waver'],['tender','afford','yield'],
+ ['fashion','yield'],['entertain','scrutinize'],['anomaly','discrepancy'],['dissent','reservation'],['dispatch','economy'],['measured','placid'],
+ ['grave','precarious'],['cultivate','bolster'],['elusive','enigmatic'],['contemporary','novel','innovative'],['ameliorate','alleviate','mitigate','abate','temper','diminish'],['circumscribe','constrain','curtail','check'],
+ ['deleterious','adverse'],['disparage','censure','discredit','disdain'],['equivocal','ambiguous','vague','opaque'],['fastidious','meticulous','discriminating','diligent'],['imperative','indispensable','cardinal'],['inadvertent','fortuitous'],
+ ['innocuous','benign'],['intractable','obstinate','dogmatic'],['nascent','novel','innovative'],['nominal','negligible','trivial','scant'],['paucity','scant','sparse','want'],['perfunctory','cursory','superficial'],
+ ['preclude','deter','hinder','curtail'],['salient','conspicuous','striking'],['stipulate','mandate','delineate'],['supersede','supplant'],['tacit','implicit'],['trepidation','malaise','aversion'],
+ ['wane','diminish','abate','flag','waver','founder'],['spare','austere','terse'],['compound','exacerbate'],['belie','betray'],['exploit','cultivate'],['circumscribe','qualify'],['disparage','discount'],['nominal','superficial']];
 const WGRP={};WCLOSE.forEach(g=>g.forEach(w=>{(WGRP[w]=WGRP[w]||new Set());g.forEach(o=>WGRP[w].add(o))}));
 const wordByW={};WORDS.forEach(x=>wordByW[x.w]=x);
 const wClose=(a,b)=>a===b||(WGRP[a]&&WGRP[a].has(b));
@@ -1518,7 +1557,9 @@ const BOX_DAYS=[0,1,3,7,16,35];
 const NEW_PER_DAY=5;
 const wst=w=>S.vocab[w];
 function dueWords(){const t=today();return WORDS.filter(x=>{const s=wst(x.w);return s&&s.due<=t}).sort((a,b)=>wst(a.w).due<wst(b.w).due?-1:wst(a.w).due>wst(b.w).due?1:0).map(x=>x.w)}
-function newWords(n){const out=[];for(const x of WORDS){if(out.length>=n)break;if(!wst(x.w))out.push(x.w)}return out}
+// New words come in a fixed mixed order (not alphabetical), so look-alikes are not introduced together.
+const WORD_ORDER=WORDS.map((x,i)=>[((i*7919)%WORDS.length)*1000+i,x.w]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+function newWords(n){const out=[];for(const w of WORD_ORDER){if(out.length>=n)break;if(!wst(w))out.push(w)}return out}
 function wordsLearned(){return Object.keys(S.vocab).filter(w=>wordByW[w]&&S.vocab[w].box>=3).length}
 function gradeWord(w,ok){const s=S.vocab[w]||(S.vocab[w]={box:0,due:today(),r:0,n:0});s.n++;s.last=today();
  if(ok){s.r++;s.box=Math.min(5,s.box+1);s.due=addDays(today(),BOX_DAYS[s.box])}else{s.box=0;s.due=addDays(today(),1)}}
@@ -1531,7 +1572,7 @@ function wordQ(w,kind){const k=wordByW[w];if(!k)return null;kind=kind||(k.m?'ctx
  const sent=esc(k.sent).replace('___',`<b>${esc(k.w)}</b>`);
  let others=wordChoices(k,k.m?2:3,'def').map(x=>x.def);if(k.m)others=[k.m,...others];
  const defs=shuf([k.def,...others]);
- const q=kind==='ctx'?`<div class="ctx">${sent}</div>As used in the sentence, <b>${esc(k.w)}</b> most nearly means`:`What does <b>${esc(k.w)}</b> mean?`;
+ const q=kind==='ctx'?`<div class="ctx">${sent}</div>As used in the text, what does the word <b>${esc(k.w)}</b> most nearly mean?`:`What does <b>${esc(k.w)}</b> mean?`;
  return {type:'mc',kind,word:w,q,ch:defs.map(esc),a:defs.indexOf(k.def),exp:`<b>${esc(k.w)}</b> here means ${esc(k.def)}.${k.m?` It does not mean "${esc(k.m)}," its everyday sense.`:''} ${kind!=='ctx'?esc(k.sent.replace('___',k.w)):''}`}}
 
 // ================= SHARED UI HELPERS =================
@@ -1547,6 +1588,8 @@ const shortDate=iso=>new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month
 const plural=(n,w,ws)=>`${n} ${n===1?w:(ws||w+'s')}`;
 let SID=0;const newSid=()=>Date.now().toString(36)+'-'+(++SID);
 
+// Answered: a choice, or a typed entry that the entry rules accept.
+const isAns=(q,v)=>v!=null&&v!==''&&(q.type!=='spr'||sprParse(String(v)).ok);
 function isRight(q,v){if(v==null||v==='')return false;return q.type==='spr'?sprCorrect(v,q.v):v===q.a}
 function ansText(q,v){if(v==null||v==='')return '<span class="muted">No answer</span>';return q.type==='spr'?esc(v):LET[v]}
 const showAns=q=>esc(q.show).replace(/-/g,'−');
@@ -1587,10 +1630,12 @@ function focusQs(n,sec){const out=[];for(const f of S.focus){if(out.length>=n)br
 // Each section moves at its own pace, so reading and writing never waits on math.
 function openSkills(sec){return secSkills(sec).filter(skActive)}
 // The skill to work on: open, not paused, not yet mastered, the one left alone longest.
+// Never-practiced skills come first, phase 1 before phase 2 and easier courses first; after that, the
+// skill left alone longest.
 function nextSkill(sec){const c=openSkills(sec).filter(id=>!mastered(id));const pool=c.length?c:openSkills(sec);if(!pool.length)return null;
- const last=id=>S.sk[id]&&S.sk[id].last||'';return pool.slice().sort((a,b)=>last(a)<last(b)?-1:last(a)>last(b)?1:skAcc(a).acc-skAcc(b).acc)[0]}
+ const last=id=>S.sk[id]&&S.sk[id].last||'';return pool.slice().sort((a,b)=>last(a)<last(b)?-1:last(a)>last(b)?1:(SK[a].phase-SK[b].phase)||((SK[a].course||0)-(SK[b].course||0))||skAcc(a).acc-skAcc(b).acc)[0]}
 const SESS={math:{n:7,review:3,per:1.5},rw:{n:7,review:3,per:1.2}};
-function sectionPlan(sec){sec=sec==='rw'?'rw':'math';const id=nextSkill(sec);const o=SESS[sec];return {sec,id,lesson:!!id&&!S.seenLesson[id],n:o.n,review:o.review,min:Math.round((id&&!S.seenLesson[id]?4:0)+(o.n+o.review)*o.per)}}
+function sectionPlan(sec){sec=sec==='rw'?'rw':'math';const rs=S.resumeSkill[sec];const id=rs&&SK[rs]&&skActive(rs)&&!mastered(rs)?rs:nextSkill(sec);const o=SESS[sec];return {sec,id,lesson:!!id&&!S.seenLesson[id],n:o.n,review:o.review,min:Math.round((id&&!S.seenLesson[id]?4:0)+(o.n+o.review)*o.per)}}
 function wordPlan(){const due=dueWords().slice(0,15);const nw=newWords(Math.max(0,NEW_PER_DAY-Math.max(0,due.length-10)));return {due,nw,min:Math.max(2,Math.round((due.length+nw.length)*0.35+(nw.length?2:0)))}}
 const doneToday=k=>S.lastDay[k]===today();
 function reviewQs(n,sec,exclude){const out=focusQs(Math.min(2,n),sec);const used=new Set(out.map(q=>q.rid).filter(Boolean));const practiced=Object.keys(S.sk).filter(id=>SK[id]&&DOMS[SK[id].dom].sec===sec&&skActive(id)&&id!==exclude);
@@ -1607,17 +1652,17 @@ function quizStep(title,qs,o){return Object.assign({k:'quiz',title,qs,i:0,res:[]
 function startSession(o){S.cur=Object.assign({sid:newSid(),step:0,started:today()},o);S.cur.steps=S.cur.steps.filter(s=>s.k!=='quiz'||s.qs.length);
  if(!S.cur.steps.length){S.cur=null;toast('Nothing to practice here right now.');render();return}S.cur.steps.push({k:'wrap'});save();render();scrollTo(0,0)}
 function startDaily(sec){const p=sectionPlan(sec);sec=p.sec;const steps=[];
- if(p.id){if(p.lesson)steps.push({k:'lesson',skill:p.id});const d=levelFor(p.id);steps.push(quizStep(SK[p.id].t,skillQs(p.id,d,p.n)))}
- steps.push(quizStep('Mixed review',reviewQs(p.id?p.review:p.n+p.review,sec,p.id)));startSession({kind:'daily',sec,title:`Today's ${sec==='math'?'math':'reading and writing'}`,steps})}
+ if(p.id){if(p.lesson)steps.push({k:'lesson',skill:p.id});const d=levelFor(p.id);steps.push(quizStep(SK[p.id].t,skillQs(p.id,d,p.n),{own:p.id}))}
+ steps.push(quizStep('Mixed review',reviewQs(p.id?p.review:p.n+p.review,sec,p.id)));startSession({kind:'daily',sec,own:p.id||'',title:`Today's ${sec==='math'?'math':'reading and writing'}`,steps})}
 function startWordsToday(){const p=wordPlan();startSession({kind:'words',title:'Words',steps:[wordsStep([...p.due,...p.nw],p.nw)]})}
 function startSkill(id,d,withLesson){const steps=[];if(withLesson||!S.seenLesson[id])steps.push({k:'lesson',skill:id});
  const lv=d&&levelOK(id,d)?d:levelFor(id);steps.push(quizStep(SK[id].t,skillQs(id,lv,10)));startSession({kind:'skill',sec:DOMS[SK[id].dom].sec,title:SK[id].t,steps})}
 function startFocus(sec){startSession({kind:'focus',sec,title:'Focus list',steps:[quizStep('Focus list',focusQs(10,sec))]})}
-function startWords(){const ws=[...dueWords().slice(0,20)];const nw=ws.length<8?newWords(8-ws.length):[];startSession({kind:'words',title:'Word review',steps:[wordsStep([...ws,...nw],nw)]})}
+function startWords(){const ws=[...dueWords().slice(0,20)];const nw=ws.length<8?newWords(8-ws.length):[];startSession({kind:'words',title:ws.length?'Word review':'New words',steps:[wordsStep([...ws,...nw],nw)]})}
 // Phase 3: hard questions only, with the real test's pace shown.
 function startDrill(sec){const ids=secSkills(sec).filter(id=>skActive(id)&&levelOK(id,3));const qs=[],used=new Set();for(let i=0;i<10&&ids.length;i++){const q=skillQs(pick(ids),3,1,used)[0];if(q)qs.push(q)}
  startSession({kind:'drill',sec,title:`Hard ${SECN[sec]} drill`,steps:[quizStep(`Hard ${SECN[sec]} drill`,qs,{pace:PACE[sec]})]})}
-function finishSession(){const c=S.cur;const k=c.kind==='daily'?c.sec:c.kind==='words'?'words':null;if(k){S.lastDay[k]=today();S.dayN[k]++}
+function finishSession(){const c=S.cur;const k=c.kind==='daily'?c.sec:c.kind==='words'?'words':null;if(k){S.lastDay[k]=today();S.dayN[k]++}if(c.kind==='daily')delete S.resumeSkill[c.sec];
  markDay();S.cur=null;S.view=c.kind==='daily'&&c.from?c.from:S.view==='result'?'home':S.view;save();render();scrollTo(0,0)}
 
 // "Not taught yet" on a math question or lesson: pause that level of the skill (or all of it)
@@ -1628,6 +1673,19 @@ function swapFor(x,id,d,kind){if(d>1&&kind==='skill')return genQ(id,d-1);if(d>1)
  const others=openSkills('math').filter(o=>o!==id);if(!others.length)return null;const pr=others.filter(o=>S.sk[o]);const o=pick(pr.length?pr:others);return genQ(o,levelFor(o))}
 function notTaught(id,d){const c=S.cur;pauseSkill(id,d);
  if(c.kind==='skill'&&d===1){S.cur=null;save();render();toast(pauseText(id,d));return}
+ if(c.kind==='daily'&&d===1){
+  // The paused skill's lesson and quiz make way for the next topic; its review questions are swapped.
+  const li=c.steps.findIndex(s=>s.k==='lesson'&&s.skill===id),qi=c.steps.findIndex(s=>s.k==='quiz'&&s.own===id);
+  const nid=nextSkill('math');const fresh=[];if(nid){if(!S.seenLesson[nid])fresh.push({k:'lesson',skill:nid});fresh.push(quizStep(SK[nid].t,skillQs(nid,levelFor(nid),SESS.math.n),{own:nid}))}
+  const wasCur=c.step===li||c.step===qi;let at=qi>=0?qi:li>=0?li:c.step;
+  if(qi>=0){const q=c.steps[qi];const done=q.res.filter(Boolean).length;if(done){q.qs=q.qs.slice(0,done);q.res=q.res.slice(0,done);q.i=done-1;at=qi+1}else{c.steps.splice(qi,1)}}
+  if(li>=0&&c.step<=li){c.steps.splice(li,1);if(at>li)at--}
+  c.steps.splice(at,0,...fresh);
+  if(wasCur)c.step=at;
+  c.steps.forEach((s,si)=>{if(si<c.step||s.k!=='quiz'||s.words||s.own)return;s.qs=s.qs.map((x,j)=>s.res[j]||x.skill!==id?x:swapFor(x,id,1,'daily')).filter(Boolean)});
+  c.steps=c.steps.filter((s,si)=>s.k!=='quiz'||s.qs.length||si<c.step);if(c.step>=c.steps.length)c.step=c.steps.length-1;
+  const st=c.steps[c.step];if(st&&st.k==='quiz'&&st.i>=st.qs.length)st.i=Math.max(0,st.qs.length-1);
+  c.own=nid||'';save();render();scrollTo(0,0);toast(nid?`${SK[id].t} is paused for 3 weeks. Next up: ${SK[nid].t}.`:pauseText(id,d));return}
  c.steps.forEach((s,si)=>{if(si<c.step||s.k!=='quiz'||s.words)return;const from=si===c.step?s.i:0;const keep=s.qs.slice(0,from);
   const rest=s.qs.slice(from).map((x,j)=>s.res[from+j]||x.skill!==id||x.diff<d?x:swapFor(x,id,d,c.kind)).filter(Boolean);s.qs=keep.concat(rest)});
  const lesson=c.steps[c.step].k==='lesson';if(lesson&&d===1)c.steps.splice(c.step,1);
@@ -1644,7 +1702,7 @@ function answerPractice(v){const st=S.cur.steps[S.cur.step];const q=st.qs[st.i];
  st.res[st.i]=r;markDay();save();render()}
 function nextQ(){const st=S.cur.steps[S.cur.step];if(st.i<st.qs.length-1){st.i++;save();render();scrollTo(0,0)}else nextStep()}
 function nextStep(){const c=S.cur;const st=c.steps[c.step];if(st.k==='lesson')S.seenLesson[st.skill]=today();if(c.step<c.steps.length-1)c.step++;save();render();scrollTo(0,0)}
-function quitSession(){if(!confirm('Leave this session? Answers so far are saved to your stats.'))return;S.cur=null;save();render()}
+function quitSession(){if(!confirm('Leave this session? Answers so far are saved to your stats.'))return;const c=S.cur;if(c.kind==='daily'&&c.own)S.resumeSkill[c.sec]=c.own;S.cur=null;save();render()}
 
 function choiceList(q,res,onPickAttr){return `<div class="choices">${q.ch.map((c,j)=>{let cls='choice';if(res){if(j===q.a)cls+=' right';else if(res.v===j)cls+=' wrong'}
  return `<button class="${cls}" ${res?'disabled':''} ${onPickAttr}="${j}"><span class="let">${LET[j]}</span><span class="ct">${c}</span></button>`}).join('')}</div>`}
@@ -1682,10 +1740,10 @@ function wireSession(){const c=S.cur;const st=c.steps[c.step];if($('#quit'))$('#
  if($('#introgo')){$('#introgo').onclick=()=>{st.introDone=true;save();render();scrollTo(0,0)};return}
  if(st.k==='quiz'){const q=st.qs[st.i];if(!st.res[st.i]){qStart=Date.now();clearInterval(stopwatch);if(st.pace)stopwatch=setInterval(()=>{const e=$('#sw');if(!e){clearInterval(stopwatch);return}const s=(Date.now()-qStart)/1000;e.textContent=`${mmss(s)} / ${mmss(st.pace)}`;e.classList.toggle('bad',s>st.pace)},500)}
   $$('[data-pick]').forEach(b=>b.onclick=()=>answerPractice(+b.dataset.pick));
-  const inp=$('#spr');if(inp&&!st.res[st.i]){const out=$('#sprp');inp.oninput=()=>sprPreview(inp,out);inp.onkeydown=e=>{if(e.key==='Enter')$('#sprgo').click()};
+  const inp=$('#spr');if(inp&&!st.res[st.i]){const out=$('#sprp');inp.oninput=()=>sprPreview(inp,out);inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#sprgo').click()}};
    $('#sprgo').onclick=()=>{const p=sprParse(inp.value);if(!p.ok){sprPreview(inp,out);inp.focus();return}answerPractice(inp.value.trim())};setTimeout(()=>inp.focus(),50)}
   $$('[data-why]').forEach(b=>b.onclick=()=>{setReason(b.dataset.mid,b.dataset.fk,b.dataset.why);render()});
-  if($('#nextq')){$('#nextq').onclick=nextQ;if(document.activeElement===document.body||!document.activeElement)$('#nextq').focus({preventScroll:true})}}}
+  if($('#nextq')){$('#nextq').onclick=nextQ;if(document.activeElement===document.body||!document.activeElement)setTimeout(()=>{const b=$('#nextq');if(b&&(document.activeElement===document.body||!document.activeElement))b.focus({preventScroll:true})},0)}}}
 
 // ================= PRACTICE TESTS (Bluebook-style) =================
 // Each section has two modules. How well Module 1 goes decides whether Module 2
@@ -1700,8 +1758,8 @@ function split(n,ws){const t=ws.reduce((a,b)=>a+b,0);const raw=ws.map(w=>w*n/t);
  raw.map((r,i)=>[r-Math.floor(r),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){out[i]++;left--}});return out}
 // About a quarter of Math questions are typed answers on the real test. Some question types
 // come only as typed answers and fill other slots when a format runs out, so asking for
-// 20% lands near 25% (measured over 300 modules).
-const SPR_SHARE=0.2;
+// the target is set so the measured share lands near 25% (mspr.js measures it).
+const SPR_SHARE=0.25;
 // How often a math skill gives a typed-answer question at a difficulty (sampled once).
 const SPR_RATE={};function sprRate(id,d){const k=id+':'+d;if(SPR_RATE[k]==null){let s=0,t=0;for(let i=0;i<24;i++){const q=SK[id].gen?SK[id].gen(d):null;if(q){t++;if(q.type==='spr')s++}}SPR_RATE[k]=t?s/t:0}return SPR_RATE[k]}
 // One question per template in a test: a bank item by id, a generated one by its wording with the numbers removed.
@@ -1742,7 +1800,7 @@ function finishTest(){const T=S.tst;const K=TEST_KINDS[T.kind];const res={id:T.i
  if(K.adaptive&&K.secs.length===2&&both)res.total=total;
  // Answered questions count toward skill stats. Misses on skills already open go on the
  // focus list; blanks (usually time running out) and not-yet-taught skills do not.
- T.mods.forEach(m=>m.qs.forEach((q,i)=>{const a=m.ans[i];if(a==null||a==='')return;const ok=isRight(q,a);if(q.skill)record(q.skill,q.diff,ok);if(q.skill&&!skOpen(q.skill))return;const mid=afterAnswer(q,ok,T.id);if(mid){m.mids=m.mids||{};m.mids[i]=mid}}));
+ T.mods.forEach(m=>m.qs.forEach((q,i)=>{const a=m.ans[i];if(!isAns(q,a))return;const ok=isRight(q,a);if(q.skill)record(q.skill,q.diff,ok);if(q.skill&&!skOpen(q.skill))return;const mid=afterAnswer(q,ok,T.id);if(mid){m.mids=m.mids||{};m.mids[i]=mid}}));
  res.qs=T.mods.flatMap(m=>m.qs.map((q,i)=>({s:q.skill,d:q.diff,ok:isRight(q,m.ans[i]),t:Math.round(m.secs[i])})));
  S.tests.push(res);if(S.tests.length>60)S.tests.splice(0,S.tests.length-60);
  S.lastReview={id:T.id,kind:T.kind,date:today(),mods:T.mods.map(m=>({sec:m.sec,route:m.route,label:m.label,qs:m.qs,ans:m.ans,secs:m.secs,marked:m.marked,mids:m.mids||{}}))};
@@ -1752,7 +1810,10 @@ function finishTest(){const T=S.tst;const K=TEST_KINDS[T.kind];const res={id:T.i
 let clockH=null,lastTick=0;
 function startClock(){stopClock();lastTick=Date.now();clockH=setInterval(tickClock,250)}
 function stopClock(){clearInterval(clockH);clockH=null}
-function tickClock(){const T=S.tst;if(!T||!T.active){stopClock();return}const now=Date.now(),dt=(now-lastTick)/1000;lastTick=now;
+// A gap of more than two minutes between ticks means the device slept or the app was suspended.
+// That time is not charged to the clock (as if Save and exit had been pressed), and the result is marked paused.
+function tickClock(){const T=S.tst;if(!T||!T.active){stopClock();return}const now=Date.now();let dt=(now-lastTick)/1000;lastTick=now;
+ if(dt>120){dt=0;T.paused=true;toast('The device was asleep. The clock stopped meanwhile, and this test will be marked as paused.')}
  if(T.phase==='break'){T.breakLeft-=dt;const e=$('#brk');if(e)e.textContent=mmss(T.breakLeft);if(T.breakLeft<=0){T.phase='between';save();render()}else if(Math.floor(now/5000)!==Math.floor((now-dt*1000)/5000))save();return}
  if(T.phase!=='module')return;const m=T.mods[T.mi];m.left-=dt;if(!m.review)m.secs[m.i]+=dt;
  const e=$('#clock');if(e){e.textContent=mmss(m.left);e.classList.toggle('warn',m.left<=300)}
@@ -1787,7 +1848,7 @@ const REF_SHEET=`<div class="refgrid">
 <div><b>Cone</b><br><i>V</i> = ${frac(1,3)}π<i>r</i><sup>2</sup><i>h</i></div><div><b>Pyramid</b><br><i>V</i> = ${frac(1,3)}<i>ℓwh</i></div></div>
 <p class="small">A circle has 360 degrees of arc, or 2π radians. The angles of a triangle add up to 180 degrees.</p>`;
 const DIRECTIONS={rw:`<p>Each question has one or two short texts, sometimes with a table or graph. Read the text and question carefully and choose the best answer based on the text. Every question is multiple choice with four choices and one best answer.</p><p>Tools: <b>Highlight</b> lets you mark words in the text. <b>ABC</b> lets you cross out answer choices. <b>Mark for review</b> flags a question so it stands out on the question list.</p>`,
- math:`<p>Calculators are allowed on every question. Unless a question says otherwise, all variables are real numbers, figures are drawn to scale, and figures lie in a plane.</p><p><b>Typed-answer questions:</b> if you find more than one correct answer, enter only one. You can enter up to 5 characters for a positive answer and 6 (including the minus sign) for a negative answer. A fraction that does not fit may be entered as a decimal; a decimal that does not fit may be rounded or cut off, but must fill all the spaces. Mixed numbers such as 3 1/2 are not allowed: enter 7/2 or 3.5. Do not enter symbols such as $ or %.</p>`};
+ math:`<p>Calculators are allowed on every question. Unless a question says otherwise, all variables are real numbers, figures are drawn to scale, figures lie in a plane, and the domain of a function <i>f</i> is all real <i>x</i> for which <i>f</i>(<i>x</i>) is a real number.</p><p><b>Typed-answer questions:</b> if you find more than one correct answer, enter only one. You can enter up to 5 characters for a positive answer and 6 (including the minus sign) for a negative answer. A fraction that does not fit may be entered as a decimal; a decimal that does not fit may be rounded or cut off, but must fill all the spaces. Mixed numbers such as 3 1/2 are not allowed: enter 7/2 or 3.5. Do not enter symbols such as $, %, or commas: enter 1,200 as 1200.</p>`};
 function modal(title,html,onClick){const back=document.activeElement;const d=document.createElement('div');d.className='modal';d.innerHTML=`<div class="modalbox" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="modalhead"><h3>${esc(title)}</h3><button class="btn small" data-close>Close</button></div>${html}</div>`;
  const close=()=>{d.remove();document.removeEventListener('keydown',key);if(back&&back.focus&&document.contains(back))back.focus()};
  const key=e=>{if(e.key==='Escape')close();else if(e.key==='Tab'){const f=[...d.querySelectorAll('button,a,input')];if(!f.length)return;const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}};
@@ -1801,7 +1862,7 @@ function renderTest(){const T=S.tst;const K=TEST_KINDS[T.kind];
   ${K.secs.length===2?'<li>A 10-minute break between the sections</li>':''}<li>About ${mins} minutes in all. Find a quiet place where you will not be interrupted.</li>
   ${K.adaptive?'<li>Your score on Module 1 decides whether Module 2 is harder or easier, as on the real test. A harder Module 2 is good news: only it can lead to the top scores.</li>':''}
   ${K.secs.includes('math')?`<li>Keep scratch paper and a pencil nearby. ${S.calcKey?'Desmos is built in.':'Desmos opens in a new tab unless a Desmos API key is set in Settings.'}</li>`:''}
-  <li>The real test cannot be paused. Here you can save and exit, but the result will be marked as paused.</li></ul>
+  <li>The real test cannot be paused. Here you can save and exit, and the clock also stops if the device falls asleep; either way the result is marked as paused.</li></ul>
   <p class="small muted">The score is an estimate from a simplified model, shown as a range. The official Bluebook practice tests are the most accurate predictor.</p>
   <div class="actions"><button class="btn primary big" id="tbegin">Begin</button><button class="btn ghost" id="tcancel">Cancel</button></div></div></div>`}
  if(T.phase==='between'){const m=T.mods[T.mi];return `<div class="wrap narrow"><div class="card center"><div class="eyebrow">Next</div><h2>${esc(m.label)}</h2><p>${MOD[m.sec].n} questions · ${MOD[m.sec].min} minutes</p><div class="actions center"><button class="btn primary big" id="tgo">Start module</button><button class="btn ghost" id="texit2">Save and exit</button></div></div></div>`}
@@ -1816,11 +1877,11 @@ function renderTest(){const T=S.tst;const K=TEST_KINDS[T.kind];
  let ans;if(q.type==='spr')ans=sprBox(q,null,'tspr');
  else ans=`<div class="choices tchoices">${q.ch.map((c,j)=>`<div class="crow ${el.includes(j)?'struck':''}"><button class="choice ${m.ans[m.i]===j?'sel':''}" data-tpick="${j}" aria-pressed="${m.ans[m.i]===j}"><span class="let">${LET[j]}</span><span class="ct">${c}</span></button>${eOn?`<button class="elimx" data-elim="${j}" aria-label="${el.includes(j)?'Undo cross-out':'Cross out'} ${LET[j]}">${el.includes(j)?'Undo':`<s>${LET[j]}</s>`}</button>`:''}</div>`).join('')}</div>`;
  const qbar=`<div class="qbar"><span class="qnum">${m.i+1}</span><button class="markbtn ${m.marked[m.i]?'on':''}" id="tmark" aria-pressed="${m.marked[m.i]}">${m.marked[m.i]?'★':'☆'} Mark for review</button>${q.type!=='spr'?`<button class="tool small ${eOn?'on':''}" id="telim" aria-pressed="${eOn}"><s>ABC</s></button>`:''}</div>`;
- const left=q.pas?`<div class="passage tpas">${q.pas}</div>`:q.type==='spr'&&!isRW?`<div class="sprdir small">${DIRECTIONS.math.split('</p>')[1]}</p></div>`:'';
+ const left=q.pas?`<div class="passage tpas">${q.pas}</div>`:q.type==='spr'&&!isRW?`<details class="sprdir small"><summary>Typed-answer rules</summary>${DIRECTIONS.math.split('</p>')[1]}</p></details>`:'';
  const split=!!left;
  return `<div class="tp">${head}<main class="tpbody ${split?'split':'single'}">${split?`<section class="tpane tleft">${left}</section>`:''}<section class="tpane tright">${qbar}${q.fig&&!q.pas?`<div class="figwrap">${q.fig}</div>`:''}<div class="stem">${q.q}</div>${ans}</section></main>${foot}</div>`}
 const lastModule=T=>{const K=TEST_KINDS[T.kind];return !K.adaptive||T.mi===K.secs.length*2-1};
-function navGrid(m){return `<div class="navgrid">${m.qs.map((q,i)=>{const a=m.ans[i];const done=a!=null&&a!=='';return `<button class="nq ${done?'ans':''} ${m.marked[i]?'mk':''} ${i===m.i&&!m.review?'cur':''}" data-go="${i}" aria-label="Question ${i+1}${done?', answered':', unanswered'}${m.marked[i]?', marked':''}">${i+1}</button>`}).join('')}</div><div class="navkey small"><span><i class="nq ans"></i>Answered</span><span><i class="nq"></i>Unanswered</span><span><i class="nq mk"></i>Marked</span></div>`}
+function navGrid(m){return `<div class="navgrid">${m.qs.map((q,i)=>{const a=m.ans[i];const done=isAns(q,a);return `<button class="nq ${done?'ans':''} ${m.marked[i]?'mk':''} ${i===m.i&&!m.review?'cur':''}" data-go="${i}" aria-label="Question ${i+1}${done?', answered':', unanswered'}${m.marked[i]?', marked':''}">${i+1}</button>`}).join('')}</div><div class="navkey small"><span><i class="nq ans"></i>Answered</span><span><i class="nq"></i>Unanswered</span><span><i class="nq mk"></i>Marked</span></div>`}
 function wireTest(){const T=S.tst;const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
  on('#tbegin',()=>{T.phase='module';save();render()});on('#tcancel',()=>{S.tst=null;save();render()});
  on('#tgo',()=>{T.phase='module';save();render()});on('#tresume',()=>{T.phase='between';save();render()});
@@ -1836,7 +1897,7 @@ function wireTest(){const T=S.tst;const on=(id,f)=>{const e=$(id);if(e)e.onclick
   if(e.target.hasAttribute('data-rev')){m.review=true;save();setTimeout(render,0);return true}return false}));
  on('#tback',()=>{if(m.review)m.review=false;else m.i=Math.max(0,m.i-1);save();render()});
  on('#tnext',()=>{if(!m.review){if(m.i<m.qs.length-1)m.i++;else m.review=true;save();render();return}
-  const blank=m.ans.filter(a=>a==null||a==='').length;if(!confirm(blank?`${plural(blank,'question')} unanswered. Move on anyway? You cannot come back to this module.`:'Move on? You cannot come back to this module.'))return;submitModule()});
+  const blank=m.qs.filter((q,i)=>!isAns(q,m.ans[i])).length;if(!confirm(blank?`${plural(blank,'question')} unanswered. Move on anyway? You cannot come back to this module.`:'Move on? You cannot come back to this module.'))return;submitModule()});
  $$('[data-go]').forEach(b=>b.onclick=()=>{m.review=false;m.i=+b.dataset.go;save();render()});
  $$('[data-tpick]').forEach(b=>b.onclick=()=>{const j=+b.dataset.tpick;const el=m.elim[m.i];if(el.includes(j))el.splice(el.indexOf(j),1);m.ans[m.i]=m.ans[m.i]===j?null:j;save();render()});
  $$('[data-elim]').forEach(b=>b.onclick=()=>{const j=+b.dataset.elim;const el=m.elim[m.i];if(el.includes(j))el.splice(el.indexOf(j),1);else{el.push(j);if(m.ans[m.i]===j)m.ans[m.i]=null}save();render()});
@@ -1851,7 +1912,7 @@ function viewResult(){const R=S.lastReview;if(!R)return `<div class="wrap"><p>No
  const secCard=sec=>{const o=res[sec];if(!o)return '';const ms=R.mods.filter(m=>m.sec===sec);const qs=ms.flatMap(m=>m.qs.map((q,i)=>({q,a:m.ans[i]})));
   const byDom={};qs.forEach(({q,a})=>{const d=SK[q.skill]?SK[q.skill].dom:'?';(byDom[d]=byDom[d]||[0,0]);byDom[d][1]++;if(isRight(q,a))byDom[d][0]++});
   return `<div class="card"><div class="cardhead"><h3>${SECN[sec]}</h3>${o.est?`<span class="big">${o.est}</span>`:''}</div>
-  ${o.est?`<p class="muted small">Estimated range ${scoreRange(o.est)} · Module 2 was the <b>${o.route==='hard'?'harder':'easier'}</b> version${o.route==='easy'?' (only a harder Module 2 can lead to scores above about 610)':''}</p>`:''}
+  ${o.est?`<p class="muted small">Estimated range ${scoreRange(o.est)} · Module 2 was the <b>${o.route==='hard'?'harder':'easier'}</b> version${o.route==='easy'?' (the easier Module 2 caps a section at roughly 600–650; the exact cap is not published)':''}</p>`:''}
   <p>${o.c.map((c,i)=>`Module ${i+1}: <b>${c}/${o.n[i]}</b>`).join(' · ')}</p>
   <div class="strands">${Object.entries(byDom).map(([d,[r,t]])=>`<div class="strand"><span>${DOMS[d]?DOMS[d].t:d}</span><div class="bar thin"><div style="width:${pct(r,t)}%"></div></div><span class="strandn">${r}/${t}</span></div>`).join('')}</div>
   <p class="small muted">Pace: ${o.avg} s per question on average (the test allows about ${PACE[sec]} s). ${o.slow?`${plural(o.slow,'question')} took more than twice that.`:''}</p></div>`};
@@ -1862,7 +1923,7 @@ function viewResult(){const R=S.lastReview;if(!R)return `<div class="wrap"><p>No
  return `<div class="wrap narrow"><div class="eyebrow">${esc(K.t)} · ${shortDate(R.date)}${res.paused?' · paused during the test':''}</div><h2>Results</h2>
  ${res.total?`<div class="card center"><div class="eyebrow">Estimated total</div><div class="hugescore">${res.total}</div><div class="muted">Likely range ${Math.max(400,res.total-70)}–${Math.min(1600,res.total+70)} · target ${S.target}</div><p class="small muted">A rough estimate from a simplified model. Official Bluebook practice tests are the most accurate predictor.</p></div>`:''}
  <div class="grid2">${TEST_KINDS[R.kind].secs.map(secCard).join('')}</div>
- <div class="card"><h3>Review the questions</h3><p class="muted small">Wrong answers on skills you have started were added to your focus list. Open each one, read the explanation, and tag why you missed it; the Progress tab shows your patterns.</p><div class="chips"><button class="chip ${all?'':'on'}" data-revall="0">Missed <span>${nmiss}</span></button><button class="chip ${all?'on':''}" data-revall="1">All questions</button></div>${rows}</div>
+ <div class="card"><h3>Review the questions</h3><p class="muted small">Wrong answers on skills that are open to you were added to your focus list, and those can be tagged with a reason; the Progress tab shows your patterns. Misses on skills your class has not reached yet are shown but not tagged.</p><div class="chips"><button class="chip ${all?'':'on'}" data-revall="0">Missed <span>${nmiss}</span></button><button class="chip ${all?'on':''}" data-revall="1">All questions</button></div>${rows}</div>
  <div class="actions"><button class="btn primary" data-view="home">Back to Today</button></div></div>`}
 function wireResult(){$$('[data-revall]').forEach(b=>b.onclick=()=>{S.revAll=b.dataset.revall==='1';save();render()});$$('[data-why]').forEach(b=>b.onclick=()=>{setReason(b.dataset.mid,b.dataset.fk,b.dataset.why);const d=b.closest('details');const open=d&&[...document.querySelectorAll('details.revq')].indexOf(d);render();if(open>=0)document.querySelectorAll('details.revq')[open].open=true})}
 
@@ -1883,18 +1944,19 @@ function wireRecovery(){const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
  on('#rv_dl',()=>{let raw='';try{raw=localStorage.getItem(KEY)||''}catch(e){}download(`sat-launchpad-data-${today()}.json`,raw||JSON.stringify(S))});
  const f=$('#rv_file');if(f)f.onchange=e=>{const x=e.target.files[0];if(!x)return;const r=new FileReader();r.onload=()=>restore(String(r.result));r.readAsText(x)};
  on('#rv_erase',eraseAll)}
-function draw(){applyTheme();const app=$('#app');const p=$('#calc');const inMath=S.tst&&S.tst.active&&S.tst.phase==='module'&&S.tst.mods[S.tst.mi].sec==='math';if(p&&!p.hidden&&!inMath)toggleCalc(false);
+function draw(){applyTheme();const app=$('#app');const ae=document.activeElement;let sel=null;if(ae&&ae!==document.body&&app.contains(ae)){if(ae.id)sel='#'+CSS.escape(ae.id);else for(const k of ['tpick','pick','go','elim','nt','why','revall','view','daily'])if(ae.dataset&&ae.dataset[k]!=null){sel=`[data-${k}="${CSS.escape(ae.dataset[k])}"]`;break}}
+ const refocus=()=>{if(!sel)return;const el=app.querySelector(sel);if(el&&!el.disabled&&document.activeElement===document.body)el.focus({preventScroll:true})};const p=$('#calc');const inMath=S.tst&&S.tst.active&&S.tst.phase==='module'&&S.tst.mods[S.tst.mi].sec==='math';if(p&&!p.hidden&&!inMath)toggleCalc(false);
  if(SAVE_OFF==='newer'){app.innerHTML=`<div class="wrap narrow"><div class="card"><h2>Please update the app</h2><p>This device's progress was saved by a newer version of SAT Launchpad. Close the app and open it again while online, and the newer version will load. Nothing has been changed.</p></div></div>`;return}
  if(SAVE_OFF==='stale'){app.innerHTML=`<div class="wrap narrow">${saveNotice()}</div>`;const b=$('#rl_reload');if(b)b.onclick=()=>location.reload();return}
  if(!S.setup){app.innerHTML=saveNotice()+viewSetup();wireSetup();wireNotice();return}
- if(S.tst&&S.tst.active){document.body.classList.add('testing');app.innerHTML=renderTest();wireTest();return}
+ if(S.tst&&S.tst.active){document.body.classList.add('testing');app.innerHTML=renderTest();wireTest();refocus();return}
  document.body.classList.remove('testing');stopClock();
- if(S.cur){app.innerHTML=renderSession();wireSession();return}
+ if(S.cur){app.innerHTML=renderSession();wireSession();refocus();return}
  const tabs=[['home','Today'],['math','Math'],['rw','Reading &amp; Writing','Reading'],['tests','Tests'],['words','Words'],['progress','Progress']];const v=S.view==='plan'?'home':S.view==='result'?'tests':S.view;
  const views={home:viewHome,plan:viewPlan,math:()=>viewSection('math'),rw:()=>viewSection('rw'),tests:viewTests,words:viewWords,progress:viewProgress,result:viewResult};
  app.innerHTML=`<header class="top"><div class="brand"><span class="logo">S</span><div><div class="brandname">SAT Launchpad</div><div class="brandsub">${esc(S.name||'')}${S.name?' · ':''}${gradeName(S.grade)} · target ${S.target}</div></div></div>
  <nav class="tabs" aria-label="Sections">${tabs.map(([k,l,sh])=>`<button class="tab ${v===k?'on':''}" data-view="${k}" ${v===k?'aria-current="page"':''}>${sh?`<span class="lgl">${l}</span><span class="sml">${sh}</span>`:l}</button>`).join('')}</nav></header><main>${saveNotice()?`<div class="wrap">${saveNotice()}</div>`:''}${(views[S.view]||viewHome)()}</main>`;
- wireCommon();wireNotice();if(S.view==='result')wireResult();if(S.view==='progress')wireProgress();if(S.view==='words')wireWords()}
+ wireCommon();wireNotice();if(S.view==='result')wireResult();if(S.view==='progress')wireProgress();if(S.view==='words')wireWords();refocus()}
 function applyTheme(){const r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme)}
 
 function wireNotice(){const b=$('#rl_raw');if(b)b.onclick=()=>{try{download('sat-launchpad-unreadable-save.json',localStorage.getItem(KEY)||'')}catch(e){}}}
@@ -1908,7 +1970,7 @@ function viewSetup(){return `<div class="wrap narrow"><div class="card setup"><d
  <label>Next official test date (optional)<input id="su_date" type="date" value="${esc(S.testDate)}"><span class="hint">PSAT 8/9, PSAT 10, PSAT/NMSQT, or SAT. Change it any time in Settings.</span></label>
  <p class="err" id="su_err" role="alert"></p><button class="btn primary big" id="su_go">Start</button></div></div>`}
 function wireSetup(){$('#su_go').onclick=()=>{const t=+$('#su_target').value;if(!(t>=800&&t<=1600)){$('#su_err').textContent='Choose a target between 800 and 1600.';return}
- S.name=$('#su_name').value.trim().slice(0,30);S.grade=+$('#su_grade').value;S.course=+$('#su_course').value;S.target=Math.round(t/10)*10;S.testDate=$('#su_date').value||'';S.setup=true;S.start=today();save();render()}}
+ S.name=$('#su_name').value.trim().slice(0,30);S.grade=+$('#su_grade').value;S.course=+$('#su_course').value;S.target=Math.round(t/10)*10;S.testDate=$('#su_date').value||'';S.setup=true;S.start=today();S.gradeSet=today();save();render()}}
 
 // ---- today ----
 function latestTotal(){const t=S.tests.filter(x=>x.total);return t.length?t[t.length-1]:null}
@@ -1930,18 +1992,27 @@ function wordsCard(){const p=wordPlan();const done=doneToday('words');
  if(done)return `<div class="card sess done"><div class="eyebrow">Words</div><h3>Done for today ✓</h3><p class="muted small">${wordsLearned()} words learned so far.</p><button class="btn small" data-view="words">Open Words</button></div>`;
  if(!p.due.length&&!p.nw.length)return `<div class="card sess done"><div class="eyebrow">Words</div><h3>No words due</h3><p class="muted small">Every word in the list has been started. Due words come back on their review days.</p></div>`;
  return `<div class="card sess today"><div class="eyebrow">Words · about ${p.min} min</div><h3>${p.due.length?`${p.due.length} to review`:''}${p.due.length&&p.nw.length?', ':''}${p.nw.length?`${p.nw.length} new`:''}</h3><p class="muted small">SAT words in context, with spaced review.</p><button class="btn primary" id="hwords">Start words</button></div>`}
+// The school year starts on August 1 for this purpose. Grade and math class never change on their own,
+// so once a year the app asks whether they are still right.
+const schoolYear=d=>{const y=+d.slice(0,4);return d>=`${y}-08-01`?y:y-1};
+function yearCard(){if(schoolYear(today())<=schoolYear(S.gradeSet||S.start))return '';
+ return `<div class="card note"><b>New school year?</b> The app has you in ${gradeName(S.grade)}, taking ${esc(COURSES[S.course])}. If that has changed, update it so the right skills open.<div class="actions"><button class="btn small primary" data-view="progress">Update in Settings</button><button class="btn small" id="yr_ok">Still right</button></div></div>`}
+// After a logged test date passes, a reminder to enter the score.
+function scoreCard(){if(!S.testDate||daysBetween(today(),S.testDate)>=0)return '';if(S.official.some(o=>o.date>=S.testDate))return '';
+ return `<div class="card note"><b>How did the test on ${shortDate(S.testDate)} go?</b> When the score arrives, log it under Progress → Official scores. Scores usually take two to three weeks.<div class="actions"><button class="btn small primary" data-view="progress">Log the score</button><button class="btn small" id="td_clear">Clear the date</button></div></div>`}
 // When a pause runs out, ask whether class has covered the skill yet.
-function pauseCards(){return pausesEnded().map(id=>`<div class="card note"><b>Has class covered ${esc(SK[id].t)} yet?</b> It was paused ${S.later[id].d>1?`(${S.later[id].d===2?'medium and hard':'hard'} questions) `:''}on ${shortDate(S.later[id].since)} as not taught yet.
- <div class="actions"><button class="btn small primary" data-resume="${id}">Yes, practice it</button><button class="btn small" data-repause="${id}">Not yet, ask again in 3 weeks</button></div></div>`).join('')}
-function viewHome(){const lt=latestTotal();const pm=secPhase('math'),pr=secPhase('rw');const dl=S.testDate?daysBetween(today(),S.testDate):null;
+function pauseCards(){const ids=pausesEnded();if(!ids.length)return '';
+ return `<div class="card note"><b>${ids.length===1?'Has class covered this yet?':'Has class covered these yet?'}</b> ${ids.length===1?'It was':'They were'} paused as not taught yet, and the three weeks are up. Paused skills stay out of practice until you answer.
+ <ul class="pauselist">${ids.map(id=>`<li><span><b>${esc(SK[id].t)}</b>${S.later[id].d>1?` <span class="small muted">(${S.later[id].d===2?'medium and hard':'hard'} questions)</span>`:''} <span class="small muted">· paused ${shortDate(S.later[id].since)}</span></span><span class="skbtns"><button class="btn small primary" data-resume="${id}">Yes, practice it</button><button class="btn small" data-repause="${id}">Not yet</button></span></li>`).join('')}</ul></div>`}
+function viewHome(){const lt=latestTotal();const tot=(doneToday('words')?0:wordPlan().min)+(doneToday('math')?0:sectionPlan('math').min)+(doneToday('rw')?0:sectionPlan('rw').min);const pm=secPhase('math'),pr=secPhase('rw');const dl=S.testDate?daysBetween(today(),S.testDate):null;
  const resume=S.tst?`<div class="card accent"><div class="cardhead"><h3>Unfinished test</h3><span class="pill warn">paused</span></div><p class="muted">${esc(TEST_KINDS[S.tst.kind].t)} · ${esc(S.tst.mods[S.tst.mi].label)}</p><div class="actions"><button class="btn primary" id="tresumebtn">Resume test</button><button class="btn ghost danger" id="tdiscard">Discard</button></div></div>`:'';
  const est=lt?`<div class="stat"><div class="statn">${lt.total}</div><div class="statl">latest estimate</div></div>`:`<div class="stat"><div class="statn">—</div><div class="statl">no estimate yet</div></div>`;
  const backup=(!S.lastBackup||daysBetween(S.lastBackup,today())>=14)&&Object.keys(S.days).length>=3?`<div class="card note"><b>Back up your progress.</b> Progress lives only on this device. <button class="linkbtn" id="hbackup">Download a backup file</button> and keep it somewhere safe.</div>`:'';
  const first=!S.tests.length&&!lt?`<div class="card"><h3>Get a baseline</h3><p class="muted">A first practice test shows where to start. It covers everything on the SAT, including topics not taught yet, so a modest first score is normal and expected.</p><button class="btn" data-view="tests">See practice tests</button></div>`:'';
  return `<div class="wrap"><section class="hero"><div><h1>${S.name?`Hi, ${esc(S.name)}.`:'Welcome.'}</h1><p class="lead">Math: phase ${pm.now}, ${PHASES[pm.now-1].toLowerCase()}.<br>Reading and Writing: phase ${pr.now}, ${PHASES[pr.now-1].toLowerCase()}.<br><button class="linkbtn" data-view="plan">See the roadmap →</button></p>${dl!=null&&dl>=0?`<p class="muted">${plural(dl,'day')} until your next official test (${shortDate(S.testDate)}).</p>`:''}</div>
  <div class="stats">${est}<div class="stat"><div class="statn">${S.target}</div><div class="statl">target</div></div><div class="stat"><div class="statn">${streak()}</div><div class="statl">day streak</div></div><div class="stat"><div class="statn">${wordsLearned()}</div><div class="statl">words learned</div></div></div></section>
- ${resume}<h2 class="todayh">Today</h2><p class="muted small">Three short pieces, about 35 minutes in all. On a busy day, do the words and one section.</p>
- <div class="grid3">${wordsCard()}${sessCard('math')}${sessCard('rw')}</div>${pauseCards()}${backup}
+ ${resume}<h2 class="todayh">Today</h2><p class="muted small">Three short pieces${tot?`, about ${tot} minutes in all`:''}. On a busy day, do the words and one section.</p>
+ ${yearCard()}${scoreCard()}<div class="grid3">${wordsCard()}${sessCard('math')}${sessCard('rw')}</div>${pauseCards()}${backup}
  <div class="grid2">${first}<div class="card"><h3>Last 4 weeks</h3>${heat()}<p class="small muted">Short, steady sessions beat cramming. Aim for five days a week.</p></div></div></div>`}
 
 // ---- roadmap ----
@@ -2066,12 +2137,12 @@ function undoRestore(){let raw=null;try{raw=localStorage.getItem(KEY+'-before-re
 function eraseAll(){const t=prompt('This erases all progress on this device. Type ERASE to confirm.');if(t!=='ERASE')return;try{const raw=localStorage.getItem(KEY);if(raw)localStorage.setItem(KEY+'-before-restore',raw);localStorage.removeItem(KEY)}catch(e){}S=norm(fresh());save();render()}
 function wireProgress(){const g=id=>$(id).value.trim();
  $('#of_add').onclick=()=>{const type=g('#of_type'),date=g('#of_date'),rw=+g('#of_rw'),math=+g('#of_math');const o=OFF[type];const err=$('#of_err');
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){err.textContent='Enter the test date.';return}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){err.textContent='Enter the test date.';return}if(date>today()){err.textContent='That date is in the future. Enter the date the test was taken.';return}
   for(const [v,l] of [[rw,'Reading and Writing'],[math,'Math']])if(!(v>=o.lo&&v<=o.hi&&v%10===0)){err.textContent=`${l} on the ${o.t} is between ${o.lo} and ${o.hi}, in steps of 10.`;return}
   S.official.push({id:newSid(),type,date,rw,math,note:g('#of_note').slice(0,60)});save();render()};
  $$('[data-deloff]').forEach(b=>b.onclick=()=>{if(!confirm('Delete this score?'))return;S.official=S.official.filter(o=>o.id!==b.dataset.deloff);save();render()});
  $('#st_save').onclick=()=>{const t=+g('#st_target');if(!(t>=800&&t<=1600)){$('#st_err').textContent='Choose a target between 800 and 1600.';return}
-  S.name=g('#st_name').slice(0,30);S.grade=+g('#st_grade');const nc=+g('#st_course');
+  S.name=g('#st_name').slice(0,30);const ng=+g('#st_grade');if(ng!==S.grade||+g('#st_course')!==S.course)S.gradeSet=today();S.grade=ng;const nc=+g('#st_course');
   // A move to the next math course means earlier courses' skills have been taught.
   if(nc>S.course)for(const id in S.later)if(SK[id]&&SK[id].course<nc)delete S.later[id];S.course=nc;S.target=Math.round(t/10)*10;S.testDate=g('#st_date');S.theme=g('#st_theme');
   const key=g('#st_calc');if(key!==S.calcKey){S.calcKey=key;calc=null;const p=$('#calc');if(p)p.remove()}S.openAll=$('#st_open').checked;const ok=save();render();if(ok)toast('Settings saved.')};
@@ -2083,6 +2154,7 @@ function wireProgress(){const g=id=>$(id).value.trim();
 // ---- shared wiring ----
 function wireCommon(){$$('[data-view]').forEach(b=>b.onclick=()=>{S.view=b.dataset.view;save();render();scrollTo(0,0)});
  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+ on('#yr_ok',()=>{S.gradeSet=today();save();render()});on('#td_clear',()=>{S.testDate='';save();render()});
  on('#hwords',startWordsToday);on('#hbackup',()=>{S.lastBackup=today();save();download(`sat-launchpad-backup-${today()}.json`,JSON.stringify(S));render()});
  $$('[data-daily]').forEach(b=>b.onclick=()=>startDaily(b.dataset.daily));$$('[data-focus]').forEach(b=>b.onclick=()=>startFocus(b.dataset.focus));
  $$('[data-resume]').forEach(b=>b.onclick=()=>{resumeSkill(b.dataset.resume);save();render();toast(`${SK[b.dataset.resume].t} is back in practice.`)});
