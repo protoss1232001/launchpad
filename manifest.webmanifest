@@ -1,7 +1,7 @@
 {
-  "name": "SAT Launchpad",
-  "short_name": "SAT Launchpad",
-  "description": "A multi-year study plan and practice app for the digital SAT.",
+  "name": "Launchpad",
+  "short_name": "Launchpad",
+  "description": "A multi-year study plan and practice app.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

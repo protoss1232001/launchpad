@@ -1,8 +1,10 @@
-// Offline cache for SAT Launchpad. The page comes from the network when there is
+// Offline cache for Launchpad. The page comes from the network when there is
 // one, so a new version shows up the next time the app is opened; if the network
 // is missing or slow, the cached copy is used. Only this app's own files are
 // cached, and only this app's caches are ever deleted (other apps may share the site).
-const PREFIX = 'sat-launchpad-';
+// Renamed when the app moved to /launchpad/; the copy at the
+// old address keeps its own cache, so it still opens offline.
+const PREFIX = 'launchpad-';
 const CACHE = PREFIX + 'v1';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });

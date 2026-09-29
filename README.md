@@ -1,8 +1,8 @@
-# SAT Launchpad
+# Launchpad
 
 A multi-year, fully offline study app for the **digital SAT**, from 8th grade through the SAT in 11th grade. It is one self-contained web page: no account, no server, no tracking.
 
-**Live app:** https://protoss1232001.github.io/SAT-launched-/
+**Live app:** https://protoss1232001.github.io/launchpad/
 
 ## The plan: three phases
 | Phase | When | Focus |
@@ -53,12 +53,14 @@ Every skill on the College Board's digital SAT specification.
 - **Skill map, score trend and official scores.** Accuracy per skill, estimates from practice tests over time, and a log for PSAT 8/9, PSAT 10, PSAT/NMSQT (with the National Merit Selection Index), SAT and Bluebook scores.
 
 ## Install it on an iPad or phone
-1. Open **https://protoss1232001.github.io/SAT-launched-/** in Safari.
+1. Open **https://protoss1232001.github.io/launchpad/** in Safari.
 2. Tap **Share → Add to Home Screen**. (On Android, use Chrome's menu → *Add to Home screen*.)
 
 It then works offline, and home-screen apps are exempt from Safari's storage cleanup, so progress is kept. When online, the app loads the newest version each time it opens; progress is stored separately and updates never erase it.
 
 ## Progress and backups
+**Moved from the old address.** The app used to live at a different address on the same site. In a browser, progress carries over automatically. A copy installed on an iPad or phone from the old address keeps its own storage and no longer updates: open it once, use *Download backup file*, then install from the new address and *Restore from file*.
+
 Progress lives only in the browser on that device. **Progress → Settings → Download backup file** saves everything to a file; *Restore from file* loads it on the same or another device. The Today tab reminds about a backup every two weeks. If a save ever cannot be read, it is kept aside rather than erased, and Settings offers it for download.
 
 ## Repository layout

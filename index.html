@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SAT Launchpad</title>
-<meta name="description" content="A multi-year study plan and practice app for the digital SAT.">
+<title>Launchpad</title>
+<meta name="description" content="A multi-year study plan and practice app.">
 <meta name="theme-color" content="#3151D3">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="SAT Launchpad">
+<meta name="apple-mobile-web-app-title" content="Launchpad">
 <style>
 :root{--paper:#F3F5FA;--card:#FFFFFF;--ink:#18223A;--muted:#5B6479;--line:#D8DEEA;--accent:#3151D3;--accent-ink:#fff;--teal:#0F7F85;--good:#177A4C;--goodbg:#E2F4EA;--warn:#8A5E00;--warnbg:#FFF3D6;--bad:#C93C35;--badbg:#FBE4E2;--figfill:#E6ECF8;--grid:#DCE3EE;--bar1:#3D6BE0;--bar2:#E0901A;--hl:#FFE58A;--shadow:0 1px 2px rgba(24,34,58,.06),0 6px 18px rgba(24,34,58,.06)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#11172A;--card:#1A2236;--ink:#ECF0F7;--muted:#A3ACBF;--line:#2B3550;--accent:#7D95FF;--accent-ink:#0E1633;--teal:#3CC3C8;--good:#4CC98A;--goodbg:#173626;--warn:#E0AE49;--warnbg:#3A2E10;--bad:#FF7A70;--badbg:#3D1E1C;--figfill:#243050;--grid:#2C3753;--bar1:#7D9BFF;--bar2:#F3B24A;--hl:#6B5A12;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25)}}
@@ -194,7 +194,7 @@ body.testing{background:var(--card)}
 </head>
 <body>
 <div id="app"></div>
-<noscript><p style="padding:20px;font-family:sans-serif">SAT Launchpad needs JavaScript turned on. Open it in Chrome, Safari, Edge, or Firefox.</p></noscript>
+<noscript><p style="padding:20px;font-family:sans-serif">Launchpad needs JavaScript turned on. Open it in Chrome, Safari, Edge, or Firefox.</p></noscript>
 <script>
 // ===== CORE HELPERS =====
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -1932,7 +1932,7 @@ const GRADES=[8,9,10,11,12];
 const gradeName=g=>`${g}th grade`;
 // If a screen fails to draw, a recovery screen replaces it instead of a blank page.
 function render(){try{draw()}catch(e){stopClock();try{console.error(e)}catch(_){}$('#app').innerHTML=recoveryView();wireRecovery()}}
-function saveNotice(){if(SAVE_OFF==='stale')return `<div class="card note blocking"><b>SAT Launchpad saved newer progress in another tab or window.</b> This copy has stopped saving so it does not overwrite that progress. <div class="actions"><button class="btn primary" id="rl_reload">Reload with the newer progress</button></div></div>`;
+function saveNotice(){if(SAVE_OFF==='stale')return `<div class="card note blocking"><b>Launchpad saved newer progress in another tab or window.</b> This copy has stopped saving so it does not overwrite that progress. <div class="actions"><button class="btn primary" id="rl_reload">Reload with the newer progress</button></div></div>`;
  if(SAVE_OFF==='blocked')return `<div class="card note"><b>Progress cannot be saved.</b> This browser is blocking storage for this site (a private window, or website data turned off). Open the app in a normal window, or allow website data.</div>`;
  if(SAVE_OFF==='rescue')return `<div class="card note"><b>Saved progress could not be read, and there was no room to set it aside.</b> Nothing will be saved until this is sorted out, so the old data is not overwritten. <button class="linkbtn" id="rl_raw">Download the saved data</button> and send it to whoever set up this app.</div>`;
  if(SAVE_FAIL)return `<div class="card note" id="savewarn"><b>Progress is not being saved.</b> The browser refused to store it (storage may be full). Download a backup file from Progress → Settings now.</div>`;return ''}
@@ -1941,12 +1941,12 @@ function recoveryView(){return `<div class="wrap narrow"><div class="card"><h2>S
  <h4>Your data</h4><div class="actions"><button class="btn" id="rv_dl">Download my data</button><label class="btn filebtn">Restore from file<input type="file" id="rv_file" accept=".json,application/json" hidden></label><button class="btn danger" id="rv_erase">Erase all progress</button></div></div></div>`}
 function wireRecovery(){const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
  on('#rv_home',()=>{S.view='home';S.cur=null;if(S.tst)S.tst.active=false;save();render()});on('#rv_leave',()=>{S.cur=null;save();render()});on('#rv_test',()=>{S.tst=null;save();render()});
- on('#rv_dl',()=>{let raw='';try{raw=localStorage.getItem(KEY)||''}catch(e){}download(`sat-launchpad-data-${today()}.json`,raw||JSON.stringify(S))});
+ on('#rv_dl',()=>{let raw='';try{raw=localStorage.getItem(KEY)||''}catch(e){}download(`launchpad-data-${today()}.json`,raw||JSON.stringify(S))});
  const f=$('#rv_file');if(f)f.onchange=e=>{const x=e.target.files[0];if(!x)return;const r=new FileReader();r.onload=()=>restore(String(r.result));r.readAsText(x)};
  on('#rv_erase',eraseAll)}
 function draw(){applyTheme();const app=$('#app');const ae=document.activeElement;let sel=null;if(ae&&ae!==document.body&&app.contains(ae)){if(ae.id)sel='#'+CSS.escape(ae.id);else for(const k of ['tpick','pick','go','elim','nt','why','revall','view','daily'])if(ae.dataset&&ae.dataset[k]!=null){sel=`[data-${k}="${CSS.escape(ae.dataset[k])}"]`;break}}
  const refocus=()=>{if(!sel)return;const el=app.querySelector(sel);if(el&&!el.disabled&&document.activeElement===document.body)el.focus({preventScroll:true})};const p=$('#calc');const inMath=S.tst&&S.tst.active&&S.tst.phase==='module'&&S.tst.mods[S.tst.mi].sec==='math';if(p&&!p.hidden&&!inMath)toggleCalc(false);
- if(SAVE_OFF==='newer'){app.innerHTML=`<div class="wrap narrow"><div class="card"><h2>Please update the app</h2><p>This device's progress was saved by a newer version of SAT Launchpad. Close the app and open it again while online, and the newer version will load. Nothing has been changed.</p></div></div>`;return}
+ if(SAVE_OFF==='newer'){app.innerHTML=`<div class="wrap narrow"><div class="card"><h2>Please update the app</h2><p>This device's progress was saved by a newer version of Launchpad. Close the app and open it again while online, and the newer version will load. Nothing has been changed.</p></div></div>`;return}
  if(SAVE_OFF==='stale'){app.innerHTML=`<div class="wrap narrow">${saveNotice()}</div>`;const b=$('#rl_reload');if(b)b.onclick=()=>location.reload();return}
  if(!S.setup){app.innerHTML=saveNotice()+viewSetup();wireSetup();wireNotice();return}
  if(S.tst&&S.tst.active){document.body.classList.add('testing');app.innerHTML=renderTest();wireTest();refocus();return}
@@ -1954,14 +1954,14 @@ function draw(){applyTheme();const app=$('#app');const ae=document.activeElement
  if(S.cur){app.innerHTML=renderSession();wireSession();refocus();return}
  const tabs=[['home','Today'],['math','Math'],['rw','Reading &amp; Writing','Reading'],['tests','Tests'],['words','Words'],['progress','Progress']];const v=S.view==='plan'?'home':S.view==='result'?'tests':S.view;
  const views={home:viewHome,plan:viewPlan,math:()=>viewSection('math'),rw:()=>viewSection('rw'),tests:viewTests,words:viewWords,progress:viewProgress,result:viewResult};
- app.innerHTML=`<header class="top"><div class="brand"><span class="logo">S</span><div><div class="brandname">SAT Launchpad</div><div class="brandsub">${esc(S.name||'')}${S.name?' · ':''}${gradeName(S.grade)} · target ${S.target}</div></div></div>
+ app.innerHTML=`<header class="top"><div class="brand"><span class="logo">L</span><div><div class="brandname">Launchpad</div><div class="brandsub">${esc(S.name||'')}${S.name?' · ':''}${gradeName(S.grade)} · target ${S.target}</div></div></div>
  <nav class="tabs" aria-label="Sections">${tabs.map(([k,l,sh])=>`<button class="tab ${v===k?'on':''}" data-view="${k}" ${v===k?'aria-current="page"':''}>${sh?`<span class="lgl">${l}</span><span class="sml">${sh}</span>`:l}</button>`).join('')}</nav></header><main>${saveNotice()?`<div class="wrap">${saveNotice()}</div>`:''}${(views[S.view]||viewHome)()}</main>`;
  wireCommon();wireNotice();if(S.view==='result')wireResult();if(S.view==='progress')wireProgress();if(S.view==='words')wireWords();refocus()}
 function applyTheme(){const r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme)}
 
-function wireNotice(){const b=$('#rl_raw');if(b)b.onclick=()=>{try{download('sat-launchpad-unreadable-save.json',localStorage.getItem(KEY)||'')}catch(e){}}}
+function wireNotice(){const b=$('#rl_raw');if(b)b.onclick=()=>{try{download('launchpad-unreadable-save.json',localStorage.getItem(KEY)||'')}catch(e){}}}
 // ---- setup ----
-function viewSetup(){return `<div class="wrap narrow"><div class="card setup"><div class="brand"><span class="logo">S</span><div><div class="brandname">SAT Launchpad</div><div class="brandsub">A multi-year plan for the digital SAT</div></div></div>
+function viewSetup(){return `<div class="wrap narrow"><div class="card setup"><div class="brand"><span class="logo">L</span><div><div class="brandname">Launchpad</div><div class="brandsub">A multi-year plan for the digital SAT</div></div></div>
  <h2 style="margin-top:14px">Let's set up</h2><p class="muted">Everything stays on this device. Nothing is sent anywhere.</p>
  <label>First name<input id="su_name" maxlength="30" value="${esc(S.name)}"></label>
  <label>Grade<select id="su_grade">${GRADES.map(g=>`<option value="${g}" ${S.grade===g?'selected':''}>${gradeName(g)}</option>`).join('')}</select></label>
@@ -2122,7 +2122,7 @@ function settingsCard(){const rescues=rescueKeys();let undo=false;try{undo=!!loc
  <h4>Start over</h4><p class="small muted">Erases all progress on this device.</p><button class="btn danger" id="st_reset">Erase all progress</button></div>`}
 function download(name,text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
 function restore(text){let o;try{o=JSON.parse(text)}catch(e){alert('That file is not a readable backup.');return}
- if(!plainObj(o)||o.v!==1||o.app!=='sat'){alert(o&&o.topics?'That looks like an ISEE Launchpad backup, not an SAT Launchpad backup.':'That is not an SAT Launchpad backup file.');return}
+ if(!plainObj(o)||o.v!==1||o.app!=='sat'){alert(o&&o.topics?'That looks like an ISEE Launchpad backup, not a Launchpad backup.':'That is not a Launchpad backup file.');return}
  const days=plainObj(o.days)?Object.keys(o.days).filter(isDate).sort():[];const nt=Array.isArray(o.tests)?o.tests.length:0,nw=plainObj(o.vocab)?Object.keys(o.vocab).length:0;
  const who=typeof o.name==='string'&&o.name?` for ${o.name.slice(0,30)}`:'';
  if(!confirm(`Replace the progress on this device with the backup${who}?\n\nThe backup has ${days.length} study days${days.length?` (last on ${days[days.length-1]})`:''}, ${nt} practice tests, and ${nw} words started.\n\nThe current progress is kept, so the restore can be undone from Settings.`))return;
@@ -2146,16 +2146,16 @@ function wireProgress(){const g=id=>$(id).value.trim();
   // A move to the next math course means earlier courses' skills have been taught.
   if(nc>S.course)for(const id in S.later)if(SK[id]&&SK[id].course<nc)delete S.later[id];S.course=nc;S.target=Math.round(t/10)*10;S.testDate=g('#st_date');S.theme=g('#st_theme');
   const key=g('#st_calc');if(key!==S.calcKey){S.calcKey=key;calc=null;const p=$('#calc');if(p)p.remove()}S.openAll=$('#st_open').checked;const ok=save();render();if(ok)toast('Settings saved.')};
- $('#bk_dl').onclick=()=>{S.lastBackup=today();save();download(`sat-launchpad-backup-${today()}.json`,JSON.stringify(S));render()};
+ $('#bk_dl').onclick=()=>{S.lastBackup=today();save();download(`launchpad-backup-${today()}.json`,JSON.stringify(S));render()};
  $('#bk_file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restore(String(r.result));r.readAsText(f)};
  $('#st_reset').onclick=eraseAll;if($('#bk_undo'))$('#bk_undo').onclick=undoRestore;
- $$('[data-rescue]').forEach(b=>b.onclick=()=>{try{download('sat-launchpad-unreadable-save.json',localStorage.getItem(b.dataset.rescue)||'')}catch(e){}})}
+ $$('[data-rescue]').forEach(b=>b.onclick=()=>{try{download('launchpad-unreadable-save.json',localStorage.getItem(b.dataset.rescue)||'')}catch(e){}})}
 
 // ---- shared wiring ----
 function wireCommon(){$$('[data-view]').forEach(b=>b.onclick=()=>{S.view=b.dataset.view;save();render();scrollTo(0,0)});
  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
  on('#yr_ok',()=>{S.gradeSet=today();save();render()});on('#td_clear',()=>{S.testDate='';save();render()});
- on('#hwords',startWordsToday);on('#hbackup',()=>{S.lastBackup=today();save();download(`sat-launchpad-backup-${today()}.json`,JSON.stringify(S));render()});
+ on('#hwords',startWordsToday);on('#hbackup',()=>{S.lastBackup=today();save();download(`launchpad-backup-${today()}.json`,JSON.stringify(S));render()});
  $$('[data-daily]').forEach(b=>b.onclick=()=>startDaily(b.dataset.daily));$$('[data-focus]').forEach(b=>b.onclick=()=>startFocus(b.dataset.focus));
  $$('[data-resume]').forEach(b=>b.onclick=()=>{resumeSkill(b.dataset.resume);save();render();toast(`${SK[b.dataset.resume].t} is back in practice.`)});
  $$('[data-repause]').forEach(b=>b.onclick=()=>{const x=S.later[b.dataset.repause];pauseSkill(b.dataset.repause,x?x.d:1);save();render()});
